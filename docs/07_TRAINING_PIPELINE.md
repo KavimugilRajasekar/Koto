@@ -3,11 +3,11 @@
 ## Full training (from random weights)
 
 ```bash
-python hibari/scripts/prepare_data.py --config hibari/configs/data/koto.yaml   # or build_finetune_mix.py
-python hibari/scripts/train.py \
-  --model-config hibari/configs/model/koto.yaml \
-  --train-config hibari/configs/training/koto.yaml \
-  --data-cache-dir hibari/data/processed
+python scripts/prepare_data.py --config configs/data/koto.yaml   # or build_finetune_mix.py
+python training/train.py \
+  --model-config configs/model/koto.yaml \
+  --train-config configs/training/koto.yaml \
+  --data-cache-dir data/processed
 ```
 
 ## Fine-tuning (continue from a checkpoint)
@@ -16,13 +16,13 @@ Same script, plus `--checkpoint`. Only the weights are loaded; the optimizer
 and LR schedule start fresh from the new config. See `08_FINE_TUNING.md`.
 
 ```bash
-python hibari/scripts/train.py \
-  --train-config hibari/configs/training/koto_v5.yaml \
-  --data-cache-dir hibari/data/processed_v5 \
-  --checkpoint hibari/models/checkpoints/koto_v4/best_model.pt
+python training/train.py \
+  --train-config configs/training/koto_v5.yaml \
+  --data-cache-dir data/processed_v5 \
+  --checkpoint checkpoints/koto_v4/best_model.pt
 ```
 
-For long runs use `nohup … > hibari/outputs/logs/<run>.log 2>&1 &` so that
+For long runs use `nohup … > outputs/logs/<run>.log 2>&1 &` so that
 closing the terminal does not stop training. `--max-steps N` overrides the
 config.
 
@@ -37,7 +37,7 @@ config.
 | v5 | fine-tune | v4 best | `processed_v5` (57,455, + writing help) | `koto_v5.yaml` | 4,500 | in progress (2026-11-21) |
 | v6 | full | random | `processed_full_v6` (107,634, + writing help) | `koto_full_v6.yaml` | 12,000 | in progress (2026-11-21) |
 
-Each run's folder is `hibari/models/checkpoints/koto_v<N>/`. Its exact
+Each run's folder is `checkpoints/koto_v<N>/`. Its exact
 configuration, data counts, supervised token count, git commit and full loss
 history are in that folder's `training_history.json` and inside every
 checkpoint (`run_metadata`).
@@ -72,7 +72,7 @@ steps ≈ 4.4 h; 2,500 steps ≈ 45 min. Export, by contrast, only copies the
 | `last_checkpoint.pt` (74 MB) | weights + optimizer + scheduler state, rewritten every `checkpoint_every` steps; for resuming |
 | `training_history.json` | args, run metadata, best step, per-step losses and LR |
 
-All of `hibari/models/checkpoints/` is gitignored, so back up `best_model.pt`.
+All of `checkpoints/` is gitignored, so back up `best_model.pt`.
 
 ## v2 configuration (`configs/training/koto.yaml`)
 

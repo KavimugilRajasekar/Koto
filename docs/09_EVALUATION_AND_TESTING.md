@@ -3,17 +3,17 @@
 ## Running an evaluation
 
 ```bash
-python hibari/scripts/evaluate.py \
-  --checkpoint hibari/models/checkpoints/koto_v4/best_model.pt \
-  --compare hibari/models/checkpoints/koto_v3/best_model.pt \
-  --out hibari/outputs/metrics/eval_v4
+python evaluation/evaluate.py \
+  --checkpoint checkpoints/koto_v4/best_model.pt \
+  --compare checkpoints/koto_v3/best_model.pt \
+  --out outputs/metrics/eval_v4
 ```
 
 For each checkpoint this writes `<out>.json` and `<out>.md` with:
 
 * **Validation loss / perplexity**: token-weighted over the 2,933-example
   validation split, overall and per source.
-* **Held-out conversation suite** (`hibari/src/hibari/evaluation/suite.py`),
+* **Held-out conversation suite** (`koto/evaluation/suite.py`),
   run greedy and sampled. Per case: non-empty, stopped on `<|eos|>`,
   complete, relevant (regex), forbidden content, 3-gram repetition, grammar
   heuristics, emoji count.
@@ -86,8 +86,8 @@ data changes (`05_DATA_PIPELINE.md`).
 
 ## GGUF parity
 
-`hibari/scripts/verify_gguf.py` compares each GGUF in llama.cpp with the
-PyTorch checkpoint. For v4 (report `hibari/outputs/metrics/parity_v4.json`):
+`../../scripts/engine/verify_gguf.py` compares each GGUF in llama.cpp with the
+PyTorch checkpoint. For v4 (report `outputs/metrics/parity_v4.json`):
 
 | File | Tokenizer | Greedy replies identical |
 |---|---|---|
@@ -96,7 +96,7 @@ PyTorch checkpoint. For v4 (report `hibari/outputs/metrics/parity_v4.json`):
 ## Unit and integration tests
 
 ```bash
-pytest            # testpaths = hibari/tests
+pytest tests       # Koto tests (engine tests: run pytest in the Hibari root)
 ```
 
 **Current status: 186 passed.**

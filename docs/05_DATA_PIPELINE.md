@@ -1,14 +1,16 @@
 # 05 — Data Pipeline (Koto)
 
-Two scripts produce training data. Both write the same cache format
-(`train_conversations.json`, `val_conversations.json`, `data_stats.json`).
+Three scripts produce training data. All write the same cache format
+(`train_conversations.json`, `val_conversations.json`, `data_stats.json`;
+`build_mix.py` also writes `test_conversations.json`).
 
 | Script | Downloads? | Use |
 |---|---|---|
-| `hibari/scripts/prepare_data.py --config hibari/configs/data/koto.yaml` | Yes, every source | Builds the base corpus from scratch → `hibari/data/processed/` |
-| `hibari/scripts/build_finetune_mix.py` | Only the writing-help sources | Re-mixes the base cache with the **current** curated / writing data → any `--dst` folder (used for v3–v6) |
+| `scripts/prepare_data.py --config configs/data/koto.yaml` | Yes, every source | Builds the base corpus from scratch → `data/processed/` |
+| `scripts/build_mix.py --config configs/data/koto_1.1.0.yaml` | No (local HF cache only) | Builds the versioned **1.1.0** mix → `data/processed_1.1.0/` (see below) |
+| `scripts/build_finetune_mix.py` | Only the writing-help sources | Re-mixes the base cache with the **current** curated / writing data → any `--dst` folder (used for v3–v6) |
 
-## Conversation sources (base corpus, `hibari/data/processed/`)
+## Conversation sources (base corpus, `data/processed/`)
 
 | Source (Hugging Face) | Use | Train examples* | Val |
 |---|---|---|---|
@@ -22,13 +24,13 @@ Two scripts produce training data. Both write the same cache format
 | `hibari.data.curated` (×3, v2 version) | identity, emotions, insults, crisis, refusals | 1,536 | — |
 | **Total** | | **71,715** | **2,933** |
 
-\*After cleaning, windowing, de-duplication and caps; see `hibari/data/processed/data_stats.json`.
+\*After cleaning, windowing, de-duplication and caps; see `data/processed/data_stats.json`.
 Every later mix reuses this validation split unchanged, so validation loss is
 comparable across v2–v6.
 
 ## Writing-help sources (added for v5 / v6)
 
-Defined in `hibari/src/hibari/data/rewrite.py`. See `16_DATASET_CATALOG.md`
+Defined in `koto/data/rewrite.py`. See `16_DATASET_CATALOG.md`
 for licences.
 
 | Source | Loader | Teaches | Usable |
@@ -55,7 +57,7 @@ How a dataset row becomes a chat example:
 set. ParaDetox and smol-rewrite are currently only available through
 `build_finetune_mix.py`.
 
-## Curated conversations (`hibari/src/hibari/data/curated.py`)
+## Curated conversations (`koto/data/curated.py`)
 
 Hand-written training examples for behaviour that public corpora don't
 teach. They are **training data**, not runtime rules. The only runtime rule
@@ -81,14 +83,14 @@ Current size: 1,209 unique conversations.
 ## Building a mix (`build_finetune_mix.py`)
 
 ```bash
-python hibari/scripts/build_finetune_mix.py --dst hibari/data/processed_v5 \
+python scripts/build_finetune_mix.py --dst data/processed_v5 \
   --replay 30000 --curated-repeats 4 \
   --coedit 12000 --paradetox 6000 --smol-rewrite 5000 --polite-repeats 2
 ```
 
 | Flag | Meaning |
 |---|---|
-| `--src` | base cache (default `hibari/data/processed`) |
+| `--src` | base cache (default `data/processed`) |
 | `--replay N` | N general conversations sampled from the base cache (its old curated rows are dropped). 70179 = all |
 | `--curated-repeats K` | current curated set ×K |
 | `--coedit N`, `--paradetox N`, `--smol-rewrite N` | writing-help examples; each kept only if it fits 257 tokens |
@@ -138,3 +140,37 @@ Mixes built so far:
 
 Loss is computed only on assistant tokens, including each reply's `<|eos|>`
 (`dataset.ConversationDataset`, verified in `tests/test_training.py`).
+
+## The 1.1.0 mix (`scripts/build_mix.py`)
+
+`configs/data/koto_1.1.0.yaml` combines, in this order:
+
+1. the general corpus from `data/processed/` (old curated records dropped);
+2. `koto.data.curated` — identity, personality, hostility, safety (×3, train only);
+3. `koto.data.conversation` — small talk, explanations, multi-turn chains (×4 in train);
+4. `koto.data.dialogue_skills` — see below (×2 in train);
+5. templated emails;
+6. writing tasks — CoEdIT, ParaDetox, smol-rewrite, polite templates and
+   `koto.data.tasks` hand-written sets, half in the canonical
+   `Task: …\nInput: …` form and half as natural requests.
+
+Every example longer than 257 tokens is dropped, user turns that match an
+evaluation prompt (3+ words) are removed, and hand-written / task data is
+split into train / val / test by a stable hash of its text.
+
+### Dialogue skills (`koto/data/dialogue_skills.py`)
+
+| Family | Teaches | Unique (train / val / test) |
+|---|---|---|
+| `recall` | repeat a fact the user stated earlier (name, pet, city, job, favourites, sibling), with 0–2 unrelated turns in between | 1,372 / 61 / 59 |
+| `clarify` | ask a clarifying question when a request has nothing to refer to ("can you fix it?", "which one is better?") | 71 / 3 / 4 |
+| `honesty` | say "I don't know" for live data, the user's private facts, obscure exact figures and unknown terms | 86 / 6 / 1 |
+| `chat_vs_correction` | answer chat that contains mistakes for its meaning; correct *with* a short explanation only when asked "is this correct?" | 115 / 2 / 9 |
+| `multi_repeat` | answer several questions in one message; answer a repeated question again politely | 33 / 2 / 0 |
+
+All examples are generated from slot templates with many values, so the
+model learns the pattern rather than one fixed reply. Nothing in this module
+is used at inference time.
+
+**Result:** 108,850 train / 4,018 val / 1,082 test examples; 26.5 % writing
+tasks; 0 unknown tokens; 0 evaluation prompts in training.

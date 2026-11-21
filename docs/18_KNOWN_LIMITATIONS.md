@@ -1,7 +1,7 @@
 # 18 — Known Limitations (Hibari Koto)
 
 Measured results are in `09_EVALUATION_AND_TESTING.md` and in the
-`hibari/outputs/metrics/eval_*.md` reports. This page explains what the
+`outputs/metrics/eval_*.md` reports. This page explains what the
 numbers mean in practice.
 
 ## Model capacity

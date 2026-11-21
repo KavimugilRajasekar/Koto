@@ -27,7 +27,7 @@
 | v6 | `koto_v6/` | — | full train including writing help; training (2026-11-21) |
 
 `best_model.pt` in each run folder is the checkpoint to use. The top-level
-`hibari/models/checkpoints/best_model.pt` is an old v1 step-250 file and
+`checkpoints/best_model.pt` is an old v1 step-250 file and
 should not be used.
 
 ## Intended use
@@ -85,10 +85,10 @@ Full results: `09_EVALUATION_AND_TESTING.md`. Limitations:
 
 | Artifact | Path |
 |---|---|
-| Checkpoints | `hibari/models/checkpoints/koto_v<N>/best_model.pt` |
-| Tokenizer | `hibari/models/tokenizer/` (`tokenizer.json`, `tokenizer_config.json`) |
-| GGUF | `hibari/models/exported/Hibari-Koto-{F32,F16,Q8_0,Q4_K_M}.gguf` (currently v4) |
-| Ollama Modelfile | `release/Modelfile` (template), `hibari/models/exported/Modelfile` |
-| Data caches | `hibari/data/processed*/` |
+| Checkpoints | `checkpoints/koto_v<N>/best_model.pt` |
+| Tokenizer | `tokenizer/` (`tokenizer.json`, `tokenizer_config.json`) |
+| GGUF | `releases/exported/Hibari-Koto-{F32,F16,Q8_0,Q4_K_M}.gguf` (currently v4) |
+| Ollama Modelfile | `release/Modelfile` (template), `releases/exported/Modelfile` |
+| Data caches | `data/processed*/` |
 
 Checkpoints, GGUFs and data caches are gitignored and exist only locally.

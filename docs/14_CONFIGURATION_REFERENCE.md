@@ -1,16 +1,18 @@
 # 14 — Configuration Reference
 
-All configs are YAML files in `hibari/configs/`. The `base` files are older templates;
-Koto uses the files listed below.
+Koto's configs are YAML files in the Koto repository's `configs/` folder.
+The engine keeps older `base` templates in `hibari/configs/` (Hibari root);
+Koto does not use them.
 
 ```
-hibari/configs/
-├── model/      koto.yaml
-├── data/       koto.yaml
-├── training/   koto.yaml, koto_full.yaml, koto_full_v6.yaml   (full training)
-│               koto_ft.yaml, koto_v5.yaml                          (fine-tunes)
-│               sft.yaml                                                      (placeholder, unused)
-└── inference/  koto.yaml
+configs/
+├── model/      koto.yaml                                  (architecture, all versions)
+├── data/       koto.yaml                                  (prepare_data.py: corpus download + tokenizer)
+│               koto_1.1.0.yaml                            (build_mix.py: the 1.1.0 training mix)
+├── training/   koto.yaml, koto_continue.yaml              (1.0.0 full run / continuation)
+│               koto_1.1.0.yaml                            (1.1.0 full run from scratch)
+│               koto_1.1.0_ft.yaml                         (1.1.0 fine-tune of 1.0.0)
+└── inference/  koto.yaml                                  (sampling defaults)
 ```
 
 ## Model (`configs/model/koto.yaml` → `hibari.model.config.ModelConfig`)
@@ -59,8 +61,8 @@ hibari/configs/
 | `source_caps` | per-source `{train, val}` example caps after cleaning / windowing |
 | `source_repeats` | repetition factor per source (e.g. `curated: 3`) |
 | `vocab_size`, `max_seq_len`, `min_frequency` | tokenizer settings (the tokenizer is not retrained for Koto) |
-| `tokenizer_dir` | `hibari/models/tokenizer` |
-| `data_cache_dir` | output folder (`hibari/data/processed`) |
+| `tokenizer_dir` | `tokenizer` |
+| `data_cache_dir` | output folder (`data/processed`) |
 | `retrain_tokenizer` | must stay `false`; retraining changes token IDs |
 | `seed` | shuffle seed |
 

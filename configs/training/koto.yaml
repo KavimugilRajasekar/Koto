@@ -2,7 +2,7 @@
 # Only use this to rebuild the model completely. To keep improving the
 # current model, use koto_continue.yaml instead.
 # This is the recipe that produced the Start checkpoint
-# (checkpoints/koto_start, see Docs/START.md).
+# (checkpoints/koto_start, see CHANGELOG.md).
 learning_rate: 1.0e-3
 min_lr_ratio: 0.1
 weight_decay: 0.1
