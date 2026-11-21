@@ -2,7 +2,7 @@
 # Only use this to rebuild the model completely. To keep improving the
 # current model, use koto_continue.yaml instead.
 # This is the recipe that produced the Start checkpoint
-# (hibari/models/checkpoints/koto_start, see Docs/START.md).
+# (checkpoints/koto_start, see Docs/START.md).
 learning_rate: 1.0e-3
 min_lr_ratio: 0.1
 weight_decay: 0.1
@@ -14,7 +14,7 @@ checkpoint_every: 1000
 eval_every: 1000
 log_every: 100
 val_examples: 4000
-output_dir: "hibari/models/checkpoints/koto_scratch"
+output_dir: "checkpoints/koto_scratch"
 save_best: true
 overwrite_output_dir: false
 early_stopping_patience: 4

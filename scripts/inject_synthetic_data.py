@@ -3,7 +3,7 @@
 This script tripled ~100 emoji-heavy examples into the v1 corpus, which
 taught the model to over-use emojis and to give scripted answers. It is kept
 only so the v1 history is reproducible. Its replacement is
-``hibari.data.curated`` (emoji-free, varied, held-out from evaluation), which
+``koto.data.curated`` (emoji-free, varied, held-out from evaluation), which
 ``scripts/prepare_data.py`` includes automatically.
 """
 import sys as _sys

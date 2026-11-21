@@ -10,7 +10,7 @@ Design rules:
 * No emojis, no invented personal experiences, short replies.
 * Each intent has several user phrasings (formal, informal, misspelled) and
   several assistant replies; examples are produced by deterministic sampling.
-* The evaluation suite (``hibari.evaluation.suite``) uses *different*
+* The evaluation suite (``koto.evaluation.suite``) uses *different*
   phrasings; ``tests/test_evaluation.py`` checks that no evaluation prompt
   appears verbatim here, so evaluation measures generalisation rather than
   recall.

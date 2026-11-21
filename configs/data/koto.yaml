@@ -1,5 +1,5 @@
 # Hibari Koto — Data Configuration (v2, used for the v2 retrain)
-# Loaded by hibari/scripts/prepare_data.py
+# Loaded by scripts/prepare_data.py (relative paths are from the Koto root)
 sources:
   - empathetic_dialogues     # Estwld/empathetic_dialogues_llm
   - everyday_conversations   # HuggingFaceTB/everyday-conversations-llama3.1-2k
@@ -29,7 +29,7 @@ source_repeats:
 vocab_size: 4096
 max_seq_len: 256
 min_frequency: 2
-tokenizer_dir: "hibari/models/tokenizer"
-data_cache_dir: "hibari/data/processed"
+tokenizer_dir: "tokenizer"
+data_cache_dir: "data/processed"
 retrain_tokenizer: false
 seed: 42

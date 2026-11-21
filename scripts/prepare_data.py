@@ -13,15 +13,24 @@ Steps
 6. Save ``train_conversations.json`` / ``val_conversations.json`` as
    ``[{"source": str, "messages": [...]}, ...]`` plus ``data_stats.json``.
 
-The existing tokenizer (hibari/models/tokenizer) is reused by default so the
+The existing tokenizer (``tokenizer/``) is reused by default so the
 vocabulary and token IDs of Hibari Koto do not change. Pass
 ``--retrain-tokenizer`` to build a new one.
 
 Usage:
-    python hibari/scripts/prepare_data.py --config hibari/configs/data/koto.yaml
+    python scripts/prepare_data.py --config configs/data/koto.yaml
+
+For Koto 1.1.0 use ``scripts/build_mix.py`` (no downloads; builds on the
+already-processed general data and adds the 1.1.0 task and conversation sets).
 """
 
 from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import koto  # noqa: E402,F401  (makes the hibari engine importable)
 
 import argparse
 import collections
@@ -38,8 +47,6 @@ import yaml
 from datasets import load_dataset
 from huggingface_hub import hf_hub_download
 
-from hibari.data.curated import build_curated_conversations
-from hibari.data.rewrite import build_polite_conversations, load_coedit
 from hibari.data.formatting import (
     DEFAULT_SYSTEM_PROMPT,
     extract_raw_texts_for_tokenizer,
@@ -51,6 +58,9 @@ from hibari.data.formatting import (
     window_conversation,
 )
 from hibari.data.tokenizer import HibariTokenizer
+from koto.data.curated import build_curated_conversations
+from koto.data.rewrite import build_polite_conversations, load_coedit
+from koto.paths import CONFIG_DIR, DATA_DIR, TOKENIZER_DIR, resolve
 
 Conv = List[Dict[str, str]]
 
@@ -177,14 +187,14 @@ def process(convs: Iterable[Conv], tokenizer: HibariTokenizer, max_tokens: int) 
 
 
 def prepare_data(config_path: str) -> None:
-    with open(config_path, "r", encoding="utf-8") as f:
+    with open(resolve(config_path), "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
 
     max_seq_len = int(cfg.get("max_seq_len", 256))
     # +1 because the dataset shifts inputs/targets by one token.
     max_tokens = max_seq_len + 1
-    tokenizer_dir = Path(cfg.get("tokenizer_dir", "hibari/models/tokenizer"))
-    data_cache_dir = Path(cfg.get("data_cache_dir", "hibari/data/processed"))
+    tokenizer_dir = resolve(cfg.get("tokenizer_dir", TOKENIZER_DIR))
+    data_cache_dir = resolve(cfg.get("data_cache_dir", DATA_DIR / "processed"))
     data_cache_dir.mkdir(parents=True, exist_ok=True)
     caps: Dict[str, Dict[str, int]] = cfg.get("source_caps", {})
     repeats: Dict[str, int] = cfg.get("source_repeats", {})
@@ -194,7 +204,7 @@ def prepare_data(config_path: str) -> None:
     if cfg.get("retrain_tokenizer", False) or not (tokenizer_dir / "tokenizer.json").exists():
         raise SystemExit(
             "Tokenizer retraining is disabled for Koto (keeps token IDs stable). "
-            "Restore hibari/models/tokenizer or set retrain_tokenizer explicitly in code."
+            "Restore tokenizer/ or set retrain_tokenizer explicitly in code."
         )
     tokenizer = HibariTokenizer.load(tokenizer_dir)
     print(f"Using tokenizer {tokenizer_dir} (vocab {tokenizer.vocab_size})")
@@ -271,7 +281,7 @@ def prepare_data(config_path: str) -> None:
 
 def main():
     parser = argparse.ArgumentParser(description="Prepare the Hibari Koto corpus")
-    parser.add_argument("--config", default="hibari/configs/data/koto.yaml")
+    parser.add_argument("--config", default=str(CONFIG_DIR / "data" / "koto.yaml"))
     args = parser.parse_args()
     prepare_data(args.config)
 

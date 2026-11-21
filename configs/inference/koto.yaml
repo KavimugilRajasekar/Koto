@@ -1,7 +1,7 @@
-# Hibari Koto — Inference Configuration (defaults used by scripts/generate.py,
+# Hibari Koto — Inference Configuration (defaults used by the Hibari engine scripts/engine/generate.py,
 # the release Modelfile and the "sampled" evaluation run)
-model_checkpoint: "hibari/models/checkpoints/koto_start/best_model.pt"
-tokenizer_dir: "hibari/models/tokenizer"
+model_checkpoint: "checkpoints/koto_start/best_model.pt"
+tokenizer_dir: "tokenizer"
 max_new_tokens: 80
 temperature: 0.5      # 0 = greedy / deterministic
 top_k: 25
