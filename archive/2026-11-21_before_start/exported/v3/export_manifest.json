@@ -1,0 +1,21 @@
+{
+  "checkpoint": "hibari/models/checkpoints/koto_v3/best_model.pt",
+  "step": 2000,
+  "parameters": 6163712,
+  "files": {
+    "f32": {
+      "status": "ok",
+      "path": "hibari/models/exported/v3/Hibari-Koto-F32.gguf",
+      "bytes": 24804544,
+      "mib": 23.66,
+      "sha256": "4be12f589a6226b2d546cc39e4a516ebbc17b308b6f8870ad345c9cc7f726f7c"
+    },
+    "q8_0": {
+      "status": "ok",
+      "path": "hibari/models/exported/v3/Hibari-Koto-Q8_0.gguf",
+      "bytes": 6708448,
+      "mib": 6.4,
+      "sha256": "c3158f6f4d3846b8d8fb92df824153c860dd5db810479e839788de50806165fa"
+    }
+  }
+}

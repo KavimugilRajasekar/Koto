@@ -1,0 +1,54 @@
+# ─── Koto model repository ───
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Logs and local experiment outputs
+*.log
+outputs/logs/*
+outputs/metrics/*
+outputs/samples/*
+!outputs/logs/.gitkeep
+!outputs/metrics/.gitkeep
+!outputs/samples/.gitkeep
+
+# Datasets (downloaded / generated) — keep folder READMEs and .gitkeep
+data/raw/*
+data/interim/*
+data/processed/*
+data/processed_*/
+data/evaluation/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!data/evaluation/.gitkeep
+
+# Checkpoints and weights
+checkpoints/**/*.pt
+checkpoints/**/*.pth
+checkpoints/**/*.safetensors
+checkpoints/**/*.bin
+*.pt
+*.pth
+*.safetensors
+*.ckpt
+
+# Generated GGUF exports (published via GitHub Releases, not committed)
+*.gguf
+
+# Local archive of pre-start experiments: keep small records, not weights/data
+archive/**/data/
+archive/**/*_conversations.json
+
+# Machine-specific configuration
+.env
+.env.*
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,98 @@
+{
+  "args": {
+    "learning_rate": 0.0003,
+    "weight_decay": 0.1,
+    "warmup_steps": 150,
+    "max_steps": 4500,
+    "batch_size": 32,
+    "gradient_clip": 1.0,
+    "checkpoint_every": 500,
+    "eval_every": 500,
+    "log_every": 100,
+    "output_dir": "hibari/models/checkpoints/koto_v5",
+    "save_best": true,
+    "seed": 42,
+    "min_lr_ratio": 0.1,
+    "max_hours": 2.5,
+    "overwrite_output_dir": false,
+    "early_stopping_patience": 0
+  },
+  "metadata": {
+    "model_config": {
+      "vocab_size": 4096,
+      "max_seq_len": 256,
+      "d_model": 256,
+      "n_layers": 6,
+      "n_heads": 8,
+      "d_ff": 768,
+      "norm_eps": 1e-05,
+      "dropout": 0.0,
+      "tie_embeddings": true,
+      "rope_theta": 10000.0,
+      "model_name": "Hibari-Koto"
+    },
+    "training_config": "hibari/configs/training/koto_v5.yaml",
+    "data_cache_dir": "hibari/data/processed_v5",
+    "train_examples": 57455,
+    "val_examples": 2933,
+    "train_supervised_tokens": 3251788,
+    "parameters": 6163712,
+    "init_checkpoint": "hibari/models/checkpoints/koto_v4/best_model.pt",
+    "git_commit": "ff376ba481b5fb3bc8efccfb2e00a960485f4a76",
+    "torch": "2.10.0+cpu"
+  },
+  "best": {
+    "eval_loss": 3.1411429970786293,
+    "eval_perplexity": 23.13028960873313,
+    "step": 500
+  },
+  "history": [
+    {
+      "step": 100,
+      "train_loss": 1.888743155002594,
+      "train_perplexity": 6.611054386614481,
+      "learning_rate": 0.00019999999999999998,
+      "grad_norm": 1.284584641456604,
+      "elapsed_s": 104.7
+    },
+    {
+      "step": 200,
+      "train_loss": 1.618335176706314,
+      "train_perplexity": 5.044684812880334,
+      "learning_rate": 0.00029991199287760634,
+      "grad_norm": 1.3964329957962036,
+      "elapsed_s": 197.5
+    },
+    {
+      "step": 300,
+      "train_loss": 1.5812325364351272,
+      "train_perplexity": 4.860943410374761,
+      "learning_rate": 0.00029920862421583855,
+      "grad_norm": 2.0614540576934814,
+      "elapsed_s": 291.8
+    },
+    {
+      "step": 400,
+      "train_loss": 1.6687044247984886,
+      "train_perplexity": 5.3052899406690885,
+      "learning_rate": 0.0002978055539308203,
+      "grad_norm": 2.0361111164093018,
+      "elapsed_s": 405.8
+    },
+    {
+      "step": 500,
+      "train_loss": 1.5585423386096955,
+      "train_perplexity": 4.7518895484061625,
+      "learning_rate": 0.00029571009698134605,
+      "grad_norm": 1.9631565809249878,
+      "elapsed_s": 579.5
+    },
+    {
+      "step": 500,
+      "eval_loss": 3.1411429970786293,
+      "eval_perplexity": 23.13028960873313,
+      "eval_tokens": 166034,
+      "elapsed_s": 669.7
+    }
+  ]
+}

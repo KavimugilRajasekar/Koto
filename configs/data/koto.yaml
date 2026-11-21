@@ -1,0 +1,35 @@
+# Hibari Koto — Data Configuration (v2, used for the v2 retrain)
+# Loaded by hibari/scripts/prepare_data.py
+sources:
+  - empathetic_dialogues     # Estwld/empathetic_dialogues_llm
+  - everyday_conversations   # HuggingFaceTB/everyday-conversations-llama3.1-2k
+  - smoltalk                 # HuggingFaceTB/smol-smoltalk (short single-turn subsets, shards 0-2)
+  - blended_skill_talk       # anezatra/blended-skill-talk (personas removed)
+  - dailydialog              # roskoN/dailydialog (spacing fixed)
+  - prosocial_dialog         # allenai/prosocial-dialog
+  - oasst1                   # OpenAssistant/oasst1 (English, rank-0 replies)
+  - coedit                   # grammarly/coedit (grammar fix, paraphrase, simplify, clarity)
+
+# Per-source caps after cleaning/windowing (examples, not raw rows)
+source_caps:
+  coedit: {train: 25000, val: 300}
+  empathetic_dialogues: {train: 30000, val: 1000}
+  everyday_conversations: {train: 10000, val: 300}
+  smoltalk: {train: 20000, val: 500}
+  blended_skill_talk: {train: 10000, val: 500}
+  dailydialog: {train: 8000, val: 500}
+  prosocial_dialog: {train: 6000, val: 500}
+  oasst1: {train: 5000, val: 300}
+
+# Repetition factor for small, high-value sources
+source_repeats:
+  curated: 3
+  everyday_conversations: 2
+
+vocab_size: 4096
+max_seq_len: 256
+min_frequency: 2
+tokenizer_dir: "hibari/models/tokenizer"
+data_cache_dir: "hibari/data/processed"
+retrain_tokenizer: false
+seed: 42

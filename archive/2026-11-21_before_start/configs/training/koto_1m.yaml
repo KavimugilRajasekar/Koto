@@ -1,0 +1,13 @@
+# Hibari Koto — Multi-Dataset SFT Training Configuration
+learning_rate: 5.0e-4
+weight_decay: 0.01
+warmup_steps: 150
+max_steps: 1500
+batch_size: 16
+gradient_clip: 1.0
+checkpoint_every: 500
+eval_every: 250
+log_every: 25
+output_dir: "hibari/models/checkpoints"
+save_best: true
+seed: 42

@@ -1,0 +1,12 @@
+# Hibari Koto — Architecture Configuration (Upgraded for Empathy & Coherence)
+model_name: "Hibari-Koto"
+vocab_size: 4096
+max_seq_len: 256
+d_model: 256
+n_layers: 6
+n_heads: 8
+d_ff: 768
+norm_eps: 1.0e-5
+dropout: 0.0
+tie_embeddings: true
+rope_theta: 10000.0

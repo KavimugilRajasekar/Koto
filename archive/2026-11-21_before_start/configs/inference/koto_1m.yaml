@@ -1,0 +1,9 @@
+# Hibari Koto 1M — Inference Configuration
+model_checkpoint: "hibari/models/checkpoints/best_model.pt"
+tokenizer_dir: "hibari/models/tokenizer"
+max_new_tokens: 64
+temperature: 0.7
+top_k: 40
+top_p: 0.9
+repetition_penalty: 1.1
+device: "cpu"

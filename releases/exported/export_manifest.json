@@ -1,0 +1,35 @@
+{
+  "checkpoint": "hibari/models/checkpoints/koto_v4/best_model.pt",
+  "step": 11000,
+  "parameters": 6163712,
+  "files": {
+    "f32": {
+      "status": "ok",
+      "path": "hibari/models/exported/Hibari-Koto-F32.gguf",
+      "bytes": 24804544,
+      "mib": 23.66,
+      "sha256": "9af98d5901c0651692d3bc72a347f5b45719a30e007cac5df908e0bd8d74326f"
+    },
+    "f16": {
+      "status": "ok",
+      "path": "hibari/models/exported/Hibari-Koto-F16.gguf",
+      "bytes": 12483776,
+      "mib": 11.91,
+      "sha256": "2181e22b3ddde5176ed83ddc3293e1081d3caa25da7fc061aa0b1abc1c919155"
+    },
+    "q8_0": {
+      "status": "ok",
+      "path": "hibari/models/exported/Hibari-Koto-Q8_0.gguf",
+      "bytes": 6708448,
+      "mib": 6.4,
+      "sha256": "12bd8e3a7ad02309341f68134f00b19502c869ccb862294ba9383fdf88efbff0"
+    },
+    "q4_k_m": {
+      "status": "ok",
+      "path": "hibari/models/exported/Hibari-Koto-Q4_K_M.gguf",
+      "bytes": 4033760,
+      "mib": 3.85,
+      "sha256": "882d0837cae2ffbc2cb741ca83ad5ac43e8a636e163a9839a7024091849a4496"
+    }
+  }
+}

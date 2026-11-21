@@ -1,0 +1,33 @@
+# Hibari Koto — Ollama Modelfile
+# Usage (from the directory containing the GGUF):
+#   ollama create hibari-koto -f Modelfile
+#   ollama run hibari-koto
+# Swap the FROM line for the F32 / F16 / Q8_0 variant if you prefer.
+FROM ./Hibari-Koto-xxx.gguf
+
+# Matches HibariTokenizer.apply_chat_template exactly:
+# <|system|>\n...<|eos|>\n<|user|>\n...<|eos|>\n<|assistant|>\n
+TEMPLATE """{{- if .System }}<|system|>
+{{ .System }}<|eos|>
+{{ end }}
+{{- range .Messages }}
+{{- if eq .Role "user" }}<|user|>
+{{ .Content }}<|eos|>
+{{ else if eq .Role "assistant" }}<|assistant|>
+{{ .Content }}<|eos|>
+{{ end }}
+{{- end }}<|assistant|>
+"""
+
+SYSTEM """You are Hibari Koto, a friendly and calm AI companion. Keep replies short, kind and honest."""
+
+PARAMETER stop "<|eos|>"
+PARAMETER stop "<|user|>"
+PARAMETER stop "<|system|>"
+PARAMETER stop "<|assistant|>"
+PARAMETER temperature 0.5
+PARAMETER top_k 25
+PARAMETER top_p 0.85
+PARAMETER repeat_penalty 1.15
+PARAMETER num_ctx 256
+PARAMETER num_predict 96

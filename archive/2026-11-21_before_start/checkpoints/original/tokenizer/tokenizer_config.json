@@ -1,0 +1,16 @@
+{
+  "special_tokens": [
+    "<|pad|>",
+    "<|unk|>",
+    "<|bos|>",
+    "<|eos|>",
+    "<|system|>",
+    "<|user|>",
+    "<|assistant|>"
+  ],
+  "pad_token": "<|pad|>",
+  "eos_token": "<|eos|>",
+  "bos_token": "<|bos|>",
+  "unk_token": "<|unk|>",
+  "vocab_size": 4096
+}
