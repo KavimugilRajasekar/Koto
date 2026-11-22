@@ -8,6 +8,9 @@ Training YAML keys beyond ``hibari.training.trainer.TrainingArgs``:
   random weights. ``--checkpoint`` on the command line overrides it.
 * ``data_cache_dir``  — processed data directory (``--data-cache-dir`` overrides)
 * ``val_examples``    — cap on validation examples
+* ``model_version``   — version of the weights this run produces (default:
+  ``koto.__version__``); recorded as ``run_metadata.model_version`` and checked
+  against ``weights_version`` in the release profile
 
 Relative paths are resolved against the Koto repository root.
 
@@ -77,6 +80,9 @@ def train(
 
     val_limit = int(t_cfg.pop("val_examples", 3000))
     experiment = t_cfg.pop("experiment", None)
+    # version of the weights this run produces (recorded in the checkpoint and
+    # checked by hibari.release.validate_profile against weights_version)
+    model_version = str(t_cfg.pop("model_version", koto.__version__))
     yaml_init = t_cfg.pop("init_checkpoint", None)
     yaml_data = t_cfg.pop("data_cache_dir", None)
     checkpoint_path = checkpoint_path or yaml_init
@@ -181,6 +187,7 @@ def train(
     run_metadata = {
         "experiment": experiment,
         "koto_version": koto.__version__,
+        "model_version": model_version,
         "model_config": model_config.to_dict(),
         "training_config": training_config_path,
         "training_config_values": {**t_cfg, "val_examples": val_limit},
@@ -219,6 +226,11 @@ def train(
     print("\n" + "=" * 60)
     print("POST-TRAINING GENERATION SANITY CHECK")
     print("=" * 60)
+    # the data mix records the system prompt it was built with (1.2.0+ may differ from the engine default)
+    try:
+        sample_system = json.loads(stats_file.read_text()).get("system_prompt") or DEFAULT_SYSTEM_PROMPT
+    except (OSError, ValueError):
+        sample_system = DEFAULT_SYSTEM_PROMPT
     test_prompts = [
         "Hi! How are you doing today?",
         "I had a really tough day at work today.",
@@ -228,7 +240,7 @@ def train(
     for p in test_prompts:
         chat_prompt = tokenizer.apply_chat_template(
             [
-                {"role": "system", "content": DEFAULT_SYSTEM_PROMPT},
+                {"role": "system", "content": sample_system},
                 {"role": "user", "content": p},
             ],
             add_generation_prompt=True,

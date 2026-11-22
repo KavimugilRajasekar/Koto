@@ -12,7 +12,7 @@ import importlib.util
 import sys
 from pathlib import Path
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 KOTO_ROOT = Path(__file__).resolve().parents[1]
 

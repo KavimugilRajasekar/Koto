@@ -4,6 +4,40 @@ Versions follow `MAJOR.MINOR.PATCH`. Each new version is developed on its own
 branch (`release/<version>`). Experiment identifiers are recorded in every
 checkpoint's `run_metadata.experiment`.
 
+## [1.2.0] — PREPARED 2026-11-22, not trained (experiment EXP-0004)
+
+- Data: `koto.data.behaviour` (identity v2, empathy, grief / sympathy / good news,
+  hostile messages, informal chat, context chains, complete e-mails), new system
+  prompt "You are Koto, a friendly and calm conversational AI built on the Hibari
+  architecture. …" in every example; `configs/data/koto_1.2.0.yaml`, built in
+  `data/processed_1.2.0` (112,605 train examples).
+- Configs: `configs/training/koto_1.2.0.yaml` (same 6.2M architecture),
+  optional `configs/model/koto_1.2.0_large.yaml` (~26M), draft
+  `configs/release/koto_1.2.0.yaml`. Training is run by the owner.
+
+## [1.1.1] — 2026-11-22 (weights unchanged: 1.1.0; engine 0.3.0; experiment EXP-0003)
+
+PATCH: inference, export and evaluation repairs. Report: `docs/31_KOTO_1.1.1_REPAIR_REPORT.md`.
+
+### Fixed
+- **Ollama ran the 1.0.0 weights.** `releases/exported/*.gguf` are tensor-identical to
+  `koto_start` (labelled koto_v4 / Hibari-Koto-Plus / 2.0). New exports in
+  `releases/exported/1.1.1/` carry `hibari.*` provenance (checkpoint / tokenizer SHA-256,
+  versions); the Modelfiles point there; the legacy files are kept and documented.
+- Decoding defaults now exist only in `configs/inference/koto.yaml`; the Modelfile is generated.
+- `training/train.py` records `model_version`; sample generation uses the data's system prompt.
+
+### Added
+- `configs/release/koto_1.1.1.yaml` (validated: 32 checks, 0 errors).
+- Python path: input normalisation and candidate reranking (8 candidates, 16 for
+  emotional / hostile / e-mail messages).
+- Behaviour suite (52 held-out cases) and `evaluation/evaluate_behaviour.py`;
+  backend parity report (F32 / F16 / Q8_0 exact on PyTorch, llama.cpp, Ollama).
+- Experiment records `experiments/EXP-0001…0004.yaml`; docs 28–31.
+
+### Measured (behaviour suite, 3 seeds)
+- Pass rate 0.590 (1.1.0 pipeline) → 0.660 (1.1.1); empathy 0.41 → 0.70; seed agreement 0.81 → 0.90; ~10× latency per turn.
+
 ## [1.1.0] — trained and evaluated 2026-11-22, not yet released (branch `release/1.1.0`)
 
 Goal: natural conversation, use of earlier turns, and sentence rewriting

@@ -6,6 +6,7 @@ import re
 
 import pytest
 import yaml
+import koto
 
 from hibari.evaluation.metrics import has_lead
 from hibari.inference.tasks import TASKS, parse_task_request
@@ -202,7 +203,8 @@ def test_train_script_runs_and_records_experiment(tmp_path):
     train(model_config_path=m, training_config_path=t, tokenizer_dir=tok)
     hist = json.loads((tmp_path / "out" / "training_history.json").read_text())
     assert hist["metadata"]["experiment"] == "test-run"
-    assert hist["metadata"]["koto_version"] == "1.1.0"
+    assert hist["metadata"]["koto_version"] == koto.__version__
+    assert hist["metadata"]["model_version"] == koto.__version__  # no model_version in the test config
     assert hist["best"]["final_step"] == 2
 
 

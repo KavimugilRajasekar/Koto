@@ -1,4 +1,6 @@
 {
+  "LEGACY_NOTE": "These files contain the Koto 1.0.0 weights (checkpoints/koto_start/best_model.pt, step 11000, sha256 e6479845...). The labels below ('koto_v4', paths under hibari/models/) are stale. Verified 2026-11-22 by tensor comparison (max |diff| = 0). No provenance metadata. Current release: exported/1.1.1/ (configs/release/koto_1.1.1.yaml).",
+  "weights_version": "1.0.0",
   "checkpoint": "hibari/models/checkpoints/koto_v4/best_model.pt",
   "step": 11000,
   "parameters": 6163712,

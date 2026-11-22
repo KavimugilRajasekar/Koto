@@ -1,0 +1,17 @@
+# OPTIONAL 1.2.0 architecture with ~4x capacity (≈ 26M parameters). Not the default.
+# The 1.1 evaluation attributes fabrication and weak context use mainly to the
+# 6.2M size. Same tokenizer and 256-token context, so the 1.2.0 data works unchanged.
+# Expect roughly 4-5x the CPU time of the 6.2M run; use a lower learning rate:
+#   python training/train.py --model-config configs/model/koto_1.2.0_large.yaml \
+#       --train-config configs/training/koto_1.2.0.yaml   (set learning_rate: 6.0e-4, output_dir: checkpoints/koto_1.2.0_large)
+model_name: "Hibari-Koto"
+vocab_size: 4096
+max_seq_len: 256
+d_model: 512
+n_layers: 8
+n_heads: 8
+d_ff: 1536
+norm_eps: 1.0e-5
+dropout: 0.0
+tie_embeddings: true
+rope_theta: 10000.0

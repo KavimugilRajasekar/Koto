@@ -53,6 +53,7 @@ import yaml  # noqa: E402
 from hibari.data.formatting import DEFAULT_SYSTEM_PROMPT  # noqa: E402
 from hibari.data.tokenizer import HibariTokenizer  # noqa: E402
 from hibari.inference.tasks import parse_task_request  # noqa: E402
+from koto.data.behaviour import apply_identity_v2, build_behaviour_conversations  # noqa: E402
 from koto.data.conversation import build_conversation_conversations  # noqa: E402
 from koto.data.curated import build_curated_conversations  # noqa: E402
 from koto.data.dialogue_skills import build_dialogue_skill_conversations  # noqa: E402
@@ -79,12 +80,15 @@ LICENCES = {
     "conversation": "MIT (written for Koto)",
     "email": "MIT (written for Koto)",
     "dialogue_skills": "MIT (written for Koto)",
+    "behaviour": "MIT (written for Koto)",
     "general": "see docs/16_DATASET_CATALOG.md (per source)",
 }
 
 
 def all_eval_texts() -> List[str]:
     texts = list(eval_user_texts())
+    from koto.evaluation.behaviour_suite import eval_user_texts as behaviour_texts
+    texts += behaviour_texts()
     for case in legacy_suite.CASES:
         texts += [t for r, t in case.turns if r == "user"]
     out = []
@@ -118,8 +122,14 @@ def main() -> None:
     rng = random.Random(seed)
     tok = HibariTokenizer.load(resolve(cfg.get("tokenizer_dir", "tokenizer")))
     max_tokens = int(cfg.get("max_seq_len", 256)) + 1
-    sysmsg = {"role": "system", "content": DEFAULT_SYSTEM_PROMPT}
-    stats: Dict = {"experiment": cfg.get("experiment"), "config": cfg, "system_prompt": DEFAULT_SYSTEM_PROMPT,
+    # 1.2.0+: `system_prompt` replaces the prompt in EVERY example (also the
+    # general corpus, whose records carry the 1.x prompt); `identity: v2`
+    # rewrites the hand-written assistant turns to the new identity.
+    system_prompt = (cfg.get("system_prompt") or DEFAULT_SYSTEM_PROMPT).strip()
+    identity = str(cfg.get("identity", "v1"))
+    ident = apply_identity_v2 if identity == "v2" else (lambda c: c)
+    sysmsg = {"role": "system", "content": system_prompt}
+    stats: Dict = {"experiment": cfg.get("experiment"), "config": cfg, "system_prompt": system_prompt, "identity": identity,
                    "max_tokens_per_example": max_tokens, "licences": LICENCES}
     eval_texts = all_eval_texts()
     # Conversation turns: only prompts of 3+ words can sensibly be kept out of
@@ -136,7 +146,7 @@ def main() -> None:
         return len(tok.encode(tok.apply_chat_template(msgs)))
 
     def add(split: str, source: str, msgs: List[dict], task: str | None = None, origin: str | None = None) -> None:
-        msgs = msgs if msgs and msgs[0]["role"] == "system" else [sysmsg] + msgs
+        msgs = [sysmsg] + msgs[1:] if msgs and msgs[0]["role"] == "system" else [sysmsg] + msgs
         if n_tokens(msgs) > max_tokens:
             dropped_long[source] += 1
             return
@@ -177,7 +187,7 @@ def main() -> None:
         add("val", r["source"], r["messages"])
 
     # ── 2. curated identity / personality / safety (train only, as in 1.0) ──
-    curated = build_curated_conversations(DEFAULT_SYSTEM_PROMPT, seed=seed)
+    curated = [ident(c) for c in build_curated_conversations(system_prompt, seed=seed)]
     kept_curated = [c for c in curated if not leaks(c)]
     leak_drops["curated"] = len(curated) - len(kept_curated)
     for _ in range(int(cfg.get("curated_repeats", 3))):
@@ -185,7 +195,7 @@ def main() -> None:
             add("train", "curated", c)
 
     # ── 3. hand-written conversation set + emails (hash split) ──
-    conv = build_conversation_conversations(seed=seed, repeats=int(cfg.get("conversation_variants", 3)))
+    conv = [ident(c) for c in build_conversation_conversations(seed=seed, repeats=int(cfg.get("conversation_variants", 3)))]
     conv_split = collections.Counter()
     seen_conv = set()
     for c in conv:
@@ -202,7 +212,7 @@ def main() -> None:
         for _ in range(reps):
             add(sp, "conversation", c)
     for c in build_email_conversations(seed=seed, n_emails=int(cfg.get("emails", 400))):
-        add("train", "email", c)
+        add("train", "email", ident(c))
 
     # ── 3b. dialogue skills: recall, clarification, honest limits, chat vs.
     #        correction, multi / repeated questions (koto.data.dialogue_skills).
@@ -214,6 +224,7 @@ def main() -> None:
         families = build_dialogue_skill_conversations(seed=seed + 2, recall_n=int(cfg.get("recall_conversations", 1500)))
         for family, convs in families.items():
             for c in convs:
+                c = ident(c)
                 key = " | ".join(norm(m["content"]) for m in c)
                 if key in seen_ds:
                     continue
@@ -226,6 +237,28 @@ def main() -> None:
                 for _ in range(ds_repeats if sp == "train" else 1):
                     add(sp, "dialogue_skills", c, origin=family)
         stats["dialogue_skills_unique_by_family_split"] = dict(ds_split)
+
+    # ── 3c. behaviour (1.2.0): identity v2, empathy, grief / sympathy / good
+    #        news, hostile messages, informal chat, context chains, full
+    #        e-mails (koto.data.behaviour). Off unless `behaviour_repeats` > 0.
+    bh_repeats = int(cfg.get("behaviour_repeats", 0))
+    if bh_repeats > 0:
+        bh_split = collections.Counter()
+        seen_bh = set()
+        for family, convs in build_behaviour_conversations(seed=seed + 3).items():
+            for c in convs:
+                key = " | ".join(norm(m["content"]) for m in c)
+                if key in seen_bh:
+                    continue
+                seen_bh.add(key)
+                if leaks(c):
+                    leak_drops["behaviour"] += 1
+                    continue
+                sp = split_of(key, cfg.get("val_pct", 4), cfg.get("test_pct", 4))
+                bh_split[f"{family}/{sp}"] += 1
+                for _ in range(bh_repeats if sp == "train" else 1):
+                    add(sp, "behaviour", c, origin=family)
+        stats["behaviour_unique_by_family_split"] = dict(bh_split)
 
     # ── 4. writing tasks ──
     tcfg = cfg.get("tasks", {})

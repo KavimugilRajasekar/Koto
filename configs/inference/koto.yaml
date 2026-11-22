@@ -1,10 +1,34 @@
-# Hibari Koto — Inference Configuration (defaults used by the Hibari engine scripts/engine/generate.py,
-# the release Modelfile and the "sampled" evaluation run)
-model_checkpoint: "checkpoints/koto_start/best_model.pt"
-tokenizer_dir: "tokenizer"
+# Koto — inference settings: the ONLY place decoding defaults are defined.
+# Read through the release profile (configs/release/koto_<version>.yaml) by
+#   * the Hibari engine (InferenceEngine.from_profile, scripts/engine/generate.py --profile),
+#   * the Ollama Modelfile generator (hibari.release.render_modelfile),
+#   * the evaluation runners (evaluation/evaluate_behaviour.py).
+# Keys are validated against hibari.release.InferenceSettings (unknown keys are an error).
+# Checkpoint and tokenizer paths live in the release profile, not here.
+
+# ── decoding (Python, llama.cpp and Ollama) ──
 max_new_tokens: 80
-temperature: 0.5      # 0 = greedy / deterministic
+temperature: 0.5        # 0 = greedy / deterministic
 top_k: 25
 top_p: 0.85
 repetition_penalty: 1.15
-device: "cpu"
+no_repeat_ngram_size: 0
+
+# ── application layer (Python engine only; not available in GGUF runtimes) ──
+enable_safety: true     # deterministic crisis / violence / harmful-request layer
+route_tasks: true       # rewriting requests -> canonical task prompt
+normalize_input: true   # expand chat shorthand (u, r, wat, thx ...) for the model input
+num_candidates: 8       # generate N replies and pick the best (hibari.inference.reranking)
+intent_candidates:      # larger pools where the 1.1.0 weights are weakest
+  emotional_disclosure: 16
+  hostile: 16
+  email_request: 16
+candidate_sampling:     # decoding of candidates 2..N (candidate 1 uses the settings above)
+  temperature: 0.8
+  top_k: 40
+  top_p: 0.95
+  repetition_penalty: 1.1
+
+# ── GGUF runtimes only ──
+num_ctx: 256            # trained context window; larger values do not help this model
+repeat_last_n: 64       # Ollama counts prompt tokens in this window (Python does not)

@@ -1,0 +1,48 @@
+# Koto 1.1.1 — release profile (hibari.release.ModelProfile).
+# PATCH release: inference, export and evaluation repairs on the UNCHANGED
+# 1.1.0 weights. No training was run for this version (training_status).
+# Validate:  python ../../scripts/engine/validate_release.py --profile configs/release/koto_1.1.1.yaml
+# Export:    python ../../scripts/engine/export.py --profile configs/release/koto_1.1.1.yaml
+# Relative paths resolve against the Koto repository root.
+
+model: koto
+version: 1.1.1
+weights_version: 1.1.0
+training_status: NOT_REQUIRED
+experiment: EXP-0003
+
+identity:
+  name: Koto
+  architecture: Hibari
+  creator: Kavimugil Rajasekar
+  description: >-
+    Koto is a small conversational model (6.2M parameters) built on the Hibari
+    engine. The 1.1.0 weights were trained to call themselves "Hibari Koto";
+    the shorter "Koto, built on Hibari" identity needs the 1.2.0 data.
+  terms: [koto, hibari, kavimugil, rajasekar]
+
+# Must stay identical to the prompt used in training (training_system_prompt):
+# a 6M model does not follow a system prompt it has never seen.
+system_prompt: >-
+  You are Hibari Koto, a friendly and calm AI companion. Keep replies short, kind and honest.
+training_system_prompt: >-
+  You are Hibari Koto, a friendly and calm AI companion. Keep replies short, kind and honest.
+
+model_config: configs/model/koto.yaml
+inference_config: configs/inference/koto.yaml
+checkpoint: checkpoints/koto_1.1.0/best_model.pt
+checkpoint_sha256: df8acd089e0e071e6abb74f8825e8c39e7b9d496d9862afb55b083e7bf0808bb
+tokenizer_dir: tokenizer
+tokenizer_sha256: d5a2924e80b2afbb371f1309a2fd825b0a2aa3e8638d4735f0f5c789581e8587
+
+gguf:
+  dir: releases/exported/1.1.1
+  files:            # sha256 values are filled in by scripts/engine/export.py --profile --record
+    f32: {file: Hibari-Koto-1.1.1-F32.gguf, sha256: 485c0fda5e31d2093fb689e4ca70ddda4a7bd20e52608a7a49b9b1ef5fbe88c4}
+    f16: {file: Hibari-Koto-1.1.1-F16.gguf, sha256: f8094cc72e7029ddc8892d60ab493c05e460ff374542a5dd6f03c5514e5ed39b}
+    q8_0: {file: Hibari-Koto-1.1.1-Q8_0.gguf, sha256: 865295367e94215e4389539d929d73161d394bf0538ad0e93446920221da36d2}
+    q4_k_m: {file: Hibari-Koto-1.1.1-Q4_K_M.gguf, sha256: ed33586e80920c1e07baddb7d4f0441571b71ada2a4b144d378b5eddce382163}
+
+notes: >-
+  Supersedes releases/exported/*.gguf, which hold the 1.0.0 (koto_start) weights
+  under the stale label "koto_v4" / "Hibari-Koto-Plus" / version 2.0.

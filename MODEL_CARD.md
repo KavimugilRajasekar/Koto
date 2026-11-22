@@ -27,6 +27,10 @@
 | v6 | `koto_v6/` | — | full train including writing help; training (2026-11-21) |
 | **1.0.0** | `koto_start/best_model.pt` (= v4) | **20.86** | released; better open chit-chat |
 | **1.1.0** | `koto_1.1.0/best_model.pt` (step 12000) | 22.39 | writing tasks, dialogue skills; not yet released |
+| **1.1.1** | `koto_1.1.0/best_model.pt` (unchanged) | 22.39 | current: same weights + reranking, normalisation, provenance-checked GGUFs (`releases/exported/1.1.1/`) |
+| 1.2.0 | `koto_1.2.0/` | — | data prepared (empathy, hostility, identity "Koto, built on Hibari"); not trained |
+
+> The GGUFs directly in `releases/exported/` contain the **1.0.0** weights (see `releases/exported/README.md`). Use `releases/exported/1.1.1/`.
 
 `best_model.pt` in each run folder is the checkpoint to use. The top-level
 `checkpoints/best_model.pt` is an old v1 step-250 file and

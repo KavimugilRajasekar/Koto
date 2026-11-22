@@ -1,0 +1,26 @@
+id: EXP-0002
+model: koto
+model_version: 1.1.0
+date: 2026-11-22
+objective: Writing help (rephrase, grammar, formal / casual) and dialogue skills without changing the architecture.
+problem: 1.0.0 could not rewrite sentences and ignored earlier turns.
+source_changes:
+  - repo: hibari
+    files: [src/hibari/data/tokenizer.py, src/hibari/inference/conversation.py, src/hibari/inference/generation.py, src/hibari/training/trainer.py, src/hibari/data/dataset.py]
+  - repo: koto
+    files: [koto/data/dialogue_skills.py, scripts/build_mix.py, koto/evaluation/upgrade_suite.py]
+datasets: [configs/data/koto_1.1.0.yaml]
+configs: [configs/model/koto.yaml, configs/training/koto_1.1.0.yaml]
+checkpoint: {path: checkpoints/koto_1.1.0/best_model.pt, step: 12000, sha256: df8acd089e0e071e6abb74f8825e8c39e7b9d496d9862afb55b083e7bf0808bb}
+training:
+  status: COMPLETED
+  authorized_by: Kavimugil Rajasekar
+  config: configs/training/koto_1.1.0.yaml
+evaluation:
+  methodology: [upgrade suite routed/unrouted, greedy + sampled, 3-seed stability, held-out loss per source]
+  reports: [outputs/evaluation/koto_1.1.0.md, outputs/evaluation/legacy_1.1.0_vs_1.0.md, docs/19_KOTO_1.1.0_DEVELOPMENT_REPORT.md]
+results: {upgrade_suite_pass_rate_routed_greedy: 0.537, val_perplexity_open_conversation: 22.39}
+failures: [grief and insults answered cheerfully, fabrication of facts, weak empathy]
+improvements: [grammar correction 5/5, meaning preservation 3/3, EOS termination 100 %]
+limitations: [open-conversation perplexity slightly worse than 1.0.0]
+conclusion: Better for writing help; empathy and hostility handling remain poor. Never exported to the release directory.

@@ -1,0 +1,68 @@
+id: EXP-0003
+model: koto
+model_version: 1.1.1
+date: 2026-11-22
+objective: >-
+  Make the existing 1.1.0 weights behave as well as decoding and the application
+  layer allow, make the GGUF / Ollama path provably run the intended weights,
+  and establish the Hibari development template. No training.
+problem: >-
+  (1) Ollama ran the 1.0.0 weights: releases/exported/*.gguf are tensor-identical
+  to checkpoints/koto_start (labelled koto_v4 / Hibari-Koto-Plus / version 2.0).
+  (2) Greedy decoding picks inappropriate replies the model can do better than:
+  "My grandmother passed away last week." -> "That is so nice of her.";
+  "Fuck you!" -> "I'm glad I could help."; sampled candidates include
+  "Oh no! I am so sorry to hear that." and "I'd like to keep things respectful...".
+  (3) Decoding defaults defined in six places; engine config templates did not
+  match the code; no experiment records; no Phase-9 behaviour suite.
+source_changes:
+  - repo: hibari
+    files: [src/hibari/inference/intent.py, src/hibari/inference/normalization.py, src/hibari/inference/reranking.py,
+            src/hibari/inference/conversation.py, src/hibari/inference/engine.py, src/hibari/inference/tasks.py,
+            src/hibari/release/, src/hibari/export/gguf_export.py, scripts/engine/export.py, scripts/engine/generate.py,
+            scripts/engine/validate_release.py, scripts/engine/validate_experiments.py, scripts/engine/compare_backends.py,
+            hibari/configs/, Docs/template/, tests/test_conversational_layer.py, tests/test_release.py]
+  - repo: koto
+    files: [configs/release/koto_1.1.1.yaml, configs/inference/koto.yaml, koto/evaluation/behaviour_suite.py,
+            evaluation/evaluate_behaviour.py, releases/exported/README.md, experiments/, docs/28-31]
+datasets: []
+configs: [configs/release/koto_1.1.1.yaml, configs/inference/koto.yaml, configs/model/koto.yaml]
+checkpoint: {path: checkpoints/koto_1.1.0/best_model.pt, sha256: df8acd089e0e071e6abb74f8825e8c39e7b9d496d9862afb55b083e7bf0808bb, note: unchanged 1.1.0 weights}
+training:
+  status: NOT_REQUIRED
+  authorized_by: null
+  config: null
+evaluation:
+  methodology:
+    - behaviour suite (52 held-out cases, 8 categories), pipelines raw / baseline (1.1.0 pipeline) / release (1.1.1), seeds 0 1 2, plus Ollama on the 1.1.1 F32 GGUF
+    - critic tuned on a separate 23-turn development set (the brief's examples + extras), never on the suite
+    - backend parity PyTorch / llama.cpp / Ollama for F32 F16 Q8_0 Q4_K_M
+    - release validation (32 checks)
+  reports: [outputs/evaluation/koto_1.1.1_behaviour.md, outputs/evaluation/backend_parity_1.1.1.json, docs/31_KOTO_1.1.1_REPAIR_REPORT.md]
+results:
+  behaviour_pass_rate_mean_3_seeds: {raw: 0.481, baseline_1_1_0_pipeline: 0.590, release_1_1_1: 0.660}
+  empathy_category_mean: {baseline: 0.407, release: 0.704}
+  seed_agreement: {baseline: 0.808, release: 0.904}
+  ollama_f32_raw_pass_rate: 0.538
+  backend_greedy_parity: {f32: 11/11, f16: 11/11, q8_0: 11/11, q4_k_m_llama_cpp: 6/11, q4_k_m_ollama: 8/11}
+  tokenizer_parity: 23/23 on every variant
+  latency_seconds_per_turn: {baseline: 0.076, release: 0.770}
+failures:
+  - "Analyzer misses emotion without a feeling word: 'Nobody came to my birthday party.' -> 'Oh, that's so nice. What did you have?'"
+  - "'My boss keeps giving me extra tasks.' (after stress) -> 'That's great news! I'm happy for you.'"
+  - "Grammar: 'i has a interview' -> 'I have a interview' (article not fixed)"
+  - "Facts: 'Totally different question: what is the capital of France?' -> 'Build a capital of France.'"
+  - "Identity: architecture question -> 'Photoing, please.'; creator not named when asked together with the name"
+  - "E-mails often truncated or missing the closing; friendly invitation message not written"
+  - "Regression vs baseline: 'nice to meet you' -> unrelated reply (basic 1.0 -> 0.833)"
+improvements:
+  - GGUF provenance: every release file proves which checkpoint and tokenizer it holds
+  - empathy +30 points, robustness +17 points, safety and seed stability up (release vs baseline, 3-seed means)
+  - one inference YAML; Modelfile generated; validators for releases and experiments
+limitations:
+  - reranking only chooses among candidates; ~10x latency on CPU
+  - application layer exists only in Python; Ollama / llama.cpp run the raw model
+  - suite checks are automatic heuristics; transcripts must be read
+conclusion: >-
+  Ship 1.1.1 as a PATCH on the 1.1.0 weights (engine 0.3.0). The remaining
+  failures need training data or capacity: prepared as EXP-0004 (1.2.0).

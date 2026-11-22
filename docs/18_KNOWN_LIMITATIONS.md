@@ -4,6 +4,22 @@ Measured results are in `09_EVALUATION_AND_TESTING.md` and in the
 `outputs/metrics/eval_*.md` reports. This page explains what the
 numbers mean in practice.
 
+## Koto 1.1.1 (measured 2026-11-22)
+
+Details: `31_KOTO_1.1.1_REPAIR_REPORT.md`, transcripts in `outputs/evaluation/koto_1.1.1_behaviour.md`.
+
+* **Reranking chooses, it cannot create.** When none of 8–16 sampled replies is good
+  ("You're so pathetic!", live weather, "what architecture do you run on?") the best
+  poor reply is returned. These need the 1.2.0 data.
+* **Emotion without a feeling word is missed** by the message analyzer ("Nobody came to my
+  birthday party."), so a cheerful reply can still win.
+* **Python only.** Safety, routing, normalisation and reranking do not exist in llama.cpp /
+  Ollama; the raw model scores 0.48–0.54 on the behaviour suite against 0.66 in Python.
+* **Latency** ~0.8 s per turn on CPU (vs ~0.08 s with one candidate).
+* **Identity wording** in replies is "Hibari Koto" (in the weights).
+* **Q4_K_M** differs from PyTorch on 3–5 of 11 greedy prompts; use Q8_0 or better.
+* Automatic suite checks are heuristics; a pass is not proof of a good reply.
+
 ## Koto 1.1.0 (measured 2026-11-22)
 
 Details and transcripts: `19_KOTO_1.1.0_DEVELOPMENT_REPORT.md`.

@@ -1,0 +1,33 @@
+id: EXP-0004
+model: koto
+model_version: 1.2.0
+date: 2026-11-22
+objective: >-
+  Teach the behaviours that decoding-time reranking cannot recover (EXP-0003):
+  empathy, grief / sympathy, de-escalation of insults, informal questions, the
+  "Koto, built on Hibari" identity, interview-style context chains, complete e-mails.
+problem: >-
+  On 1.1.0 weights, for several prompts none of 16 sampled candidates is acceptable
+  (e.g. "You're so pathetic!" -> "I don't have an appointment yet.";
+  "What will the weather be like in Madurai next Tuesday?" -> invented forecast).
+source_changes:
+  - repo: koto
+    files: [koto/data/behaviour.py, scripts/build_mix.py, training/train.py]
+datasets: [configs/data/koto_1.2.0.yaml]
+configs: [configs/model/koto.yaml, configs/model/koto_1.2.0_large.yaml, configs/training/koto_1.2.0.yaml, configs/release/koto_1.2.0.yaml]
+checkpoint: null
+training:
+  status: NOT_STARTED        # the owner runs and authorises training; set MANUALLY_AUTHORIZED + authorized_by first
+  authorized_by: null
+  config: configs/training/koto_1.2.0.yaml
+evaluation:
+  methodology:
+    - evaluation/evaluate_behaviour.py --profile configs/release/koto_1.2.0.yaml --seeds 0 1 2 (compare with outputs/evaluation/koto_1.1.1_behaviour.md)
+    - evaluation/evaluate_upgrade.py (regression on writing tasks vs 1.1.0)
+    - scripts/engine/compare_backends.py after export
+  reports: []
+results: {}
+failures: []
+improvements: []
+limitations: [data prepared and built (data/processed_1.2.0, 112,605 train examples); no weights yet]
+conclusion: Ready to train. Accept 1.2.0 only if the behaviour suite improves without a writing-task regression.
