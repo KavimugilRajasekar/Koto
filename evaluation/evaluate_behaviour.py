@@ -221,8 +221,8 @@ def main() -> None:
                                    "pass_rates": [rep["runs"][k]["summary"]["pass_rate"] for k in keys]}
     out = resolve(a.out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    (out / f"{a.name}.json").write_text(json.dumps(rep, indent=2, ensure_ascii=False))
-    (out / f"{a.name}.md").write_text(to_markdown(rep))
+    (out / f"{a.name}.json").write_text(json.dumps(rep, indent=2, ensure_ascii=False), encoding="utf-8")
+    (out / f"{a.name}.md").write_text(to_markdown(rep), encoding="utf-8")
     for k, r in rep["runs"].items():
         print(k, json.dumps({"pass_rate": r["summary"]["pass_rate"], **r["summary"]["by_category"]}))
     print(f"Wrote {out / (a.name + '.json')} and .md")

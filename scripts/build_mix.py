@@ -112,7 +112,7 @@ def main() -> None:
     ap.add_argument("--config", default="configs/data/koto_1.1.0.yaml")
     ap.add_argument("--overwrite", action="store_true", help="Replace an existing output directory")
     a = ap.parse_args()
-    cfg = yaml.safe_load(resolve(a.config).read_text())
+    cfg = yaml.safe_load(resolve(a.config).read_text(encoding="utf-8"))
     if os.environ.get("HF_HUB_OFFLINE") != "1":
         os.environ["HF_HUB_OFFLINE"] = "1"  # read the local cache only; never download
 
@@ -173,8 +173,8 @@ def main() -> None:
 
     # ── 1. general conversation (existing processed corpus) ──
     gsrc = resolve(cfg["general_src"])
-    g_train = json.loads((gsrc / "train_conversations.json").read_text())
-    g_val = json.loads((gsrc / "val_conversations.json").read_text())
+    g_train = json.loads((gsrc / "train_conversations.json").read_text(encoding="utf-8"))
+    g_val = json.loads((gsrc / "val_conversations.json").read_text(encoding="utf-8"))
     stats["inputs"] = {str(gsrc / f): sha256(gsrc / f) for f in ("train_conversations.json", "val_conversations.json")}
     g_train = [r for r in g_train if r["source"] != "curated"]
     rng.shuffle(g_train)
@@ -360,9 +360,9 @@ def main() -> None:
     stats["task_share_of_train"] = round(task_train / max(1, len(splits["train"])), 3)
 
     for sp, recs in splits.items():
-        (out_dir / f"{sp}_conversations.json").write_text(json.dumps(recs, ensure_ascii=False))
+        (out_dir / f"{sp}_conversations.json").write_text(json.dumps(recs, ensure_ascii=False), encoding="utf-8")
     stats["outputs"] = {f"{sp}_conversations.json": sha256(out_dir / f"{sp}_conversations.json") for sp in splits}
-    (out_dir / "data_stats.json").write_text(json.dumps(stats, indent=2, ensure_ascii=False))
+    (out_dir / "data_stats.json").write_text(json.dumps(stats, indent=2, ensure_ascii=False), encoding="utf-8")
     print(json.dumps({k: stats[k] for k in ("splits", "tasks_by_split", "dropped_too_long", "leak_drops", "task_dedup",
                                             "eval_prompts_in_train_user_turns", "heldout_user_turns_also_in_train",
                                             "unk_tokens_in_first_20k_per_split", "task_share_of_train")}, indent=1))

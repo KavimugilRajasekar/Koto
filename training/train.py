@@ -248,7 +248,7 @@ def train(
     print("=" * 60)
     # the data mix records the system prompt it was built with (1.2.0+ may differ from the engine default)
     try:
-        sample_system = json.loads(stats_file.read_text()).get("system_prompt") or DEFAULT_SYSTEM_PROMPT
+        sample_system = json.loads(stats_file.read_text(encoding="utf-8")).get("system_prompt") or DEFAULT_SYSTEM_PROMPT
     except (OSError, ValueError):
         sample_system = DEFAULT_SYSTEM_PROMPT
     test_prompts = [

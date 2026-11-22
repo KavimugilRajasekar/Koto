@@ -65,7 +65,7 @@ def training_user_texts(path: Optional[Path]) -> set:
     if not path or not path.exists():
         return set()
     out = set()
-    for rec in json.loads(path.read_text()):
+    for rec in json.loads(path.read_text(encoding="utf-8")):
         msgs = rec["messages"] if isinstance(rec, dict) else rec
         for m in msgs:
             if m["role"] == "user":
@@ -183,7 +183,7 @@ def heldout_loss(model, tok, data_dir: Path) -> Dict:
         f = data_dir / f"{split}_conversations.json"
         if not f.exists():
             continue
-        res = evaluate_records(model, tok, json.loads(f.read_text()), batch_size=32)
+        res = evaluate_records(model, tok, json.loads(f.read_text(encoding="utf-8")), batch_size=32)
         out[split] = {src: {"loss": m["loss"], "perplexity": m["perplexity"], "examples": m["examples"]}
                       for src, m in res.items() if src != "all"}
     return out
@@ -272,8 +272,8 @@ def main() -> None:
 
     out_dir = resolve(a.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / f"{a.name}.json").write_text(json.dumps(rep, indent=2, ensure_ascii=False))
-    (out_dir / f"{a.name}.md").write_text(to_markdown(rep))
+    (out_dir / f"{a.name}.json").write_text(json.dumps(rep, indent=2, ensure_ascii=False), encoding="utf-8")
+    (out_dir / f"{a.name}.md").write_text(to_markdown(rep), encoding="utf-8")
     for k, run in rep["runs"].items():
         print(k, json.dumps({"pass_rate": run["summary"]["pass_rate"], **run["summary"]["by_category"]}))
     print(f"Wrote {out_dir / (a.name + '.json')} and .md")

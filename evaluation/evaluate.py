@@ -56,7 +56,7 @@ MAX_NEW = 64
 
 
 def val_metrics(model, tok, val_path: Path, limit: int) -> Dict:
-    recs = json.loads(val_path.read_text())[:limit]
+    recs = json.loads(val_path.read_text(encoding="utf-8"))[:limit]
     by_src = collections.defaultdict(list)
     for r in recs:
         by_src[r.get("source", "unknown") if isinstance(r, dict) else "unknown"].append(r)
@@ -237,8 +237,8 @@ def main():
 
     out = resolve(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.with_suffix(".json").write_text(json.dumps(report, indent=2, ensure_ascii=False))
-    out.with_suffix(".md").write_text(to_markdown(report))
+    out.with_suffix(".json").write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+    out.with_suffix(".md").write_text(to_markdown(report), encoding="utf-8")
     for r in report["results"]:
         print(r["checkpoint"], json.dumps(r["greedy"]["summary"]), r["validation"]["overall"] if r["validation"] else "")
     print(f"Wrote {out.with_suffix('.json')} and {out.with_suffix('.md')}")

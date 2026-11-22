@@ -46,7 +46,7 @@ def main() -> None:
     ap.add_argument("--analyze-limit", type=int, default=4000, help="user turns analysed per source (emotion coverage)")
     a = ap.parse_args()
 
-    recs = json.loads((resolve(a.data_dir) / f"{a.split}_conversations.json").read_text())
+    recs = json.loads((resolve(a.data_dir) / f"{a.split}_conversations.json").read_text(encoding="utf-8"))
     by = collections.defaultdict(list)
     for r in recs:
         by[r.get("source", "unknown")].append(r)
@@ -79,7 +79,7 @@ def main() -> None:
         }
     out = OUTPUT_DIR / "data"
     out.mkdir(parents=True, exist_ok=True)
-    (out / f"{a.name}.json").write_text(json.dumps(report, indent=2))
+    (out / f"{a.name}.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     cols = ["conversations", "share_of_mix", "multi_turn_share", "mean_turn_pairs", "mean_reply_words", "duplicate_share",
             "quality_rejection_share", "emotional_user_turn_share", "rewrite_request_share", "eval_prompt_overlap"]
     lines = [f"# Dataset report — `{a.name}` ({a.data_dir}, {a.split}, {len(recs):,} conversations)", "",
@@ -90,7 +90,7 @@ def main() -> None:
     for src, s in report["sources"].items():
         lines.append(f"- **{src}**: emotions {s['emotions'] or '-'}; quality rejections {s['quality_rejections'] or '-'}; "
                      f"schema {s['schema_problems'] or 'ok'}")
-    (out / f"{a.name}.md").write_text("\n".join(lines) + "\n")
+    (out / f"{a.name}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines[:len(report['sources']) + 4]))
 
 
