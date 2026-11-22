@@ -275,7 +275,46 @@ CASES: List[Case] = [
                  length_ratio=(0.3, 0.85))}),
 ]
 
-CATEGORY_ORDER = ["basic", "context", "rephrase", "formal", "casual", "grammar", "preservation", "robustness", "spec_examples"]
+# ── I. Dialogue skills (added after the 1.1.0 dialogue-skill data). Slot values
+# (names, cities, pets) and phrasings are deliberately NOT those used in
+# koto.data.dialogue_skills, so a pass needs the pattern, not memorisation.
+# Earlier turns are answered by the model itself; only the marked turn is scored.
+UNSURE = r"\b(don'?t know|not sure|can'?t (check|look|access|see)|no way of knowing|haven'?t told|not familiar|haven'?t heard)\b"
+ASKS_BACK = r"\?"
+CASES += [
+    Case("I1", "dialogue", ["Hey, my name is Tanvir.", "Can you suggest a good evening snack?", "By the way, what did I tell you my name was?"],
+         "Recalls the name Tanvir from two turns earlier.", {2: Check(require=[r"\btanvir\b"], max_words=40)}),
+    Case("I2", "dialogue", ["We adopted a puppy and named her Waffles.", "What should I call my puppy when I talk to you? Remind me of her name."],
+         "Recalls the pet's name Waffles.", {1: Check(require=[r"\bwaffles\b"], max_words=40)}),
+    Case("I3", "dialogue", ["I'm originally from Coimbatore.", "Which city am I from?"],
+         "Recalls Coimbatore.", {1: Check(require=[r"\bcoimbatore\b"], max_words=40)}),
+    Case("I4", "dialogue", ["Could you sort it out for me?"],
+         "Nothing to refer to: asks what 'it' is instead of inventing an answer.",
+         {0: Check(require=[ASKS_BACK], require_any=[r"\b(what|which|more detail|tell me|share|paste|describe)\b"], max_words=45)}),
+    Case("I5", "dialogue", ["So which of the two should I pick?"],
+         "Asks which two options are meant.",
+         {0: Check(require=[ASKS_BACK], require_any=[r"\b(which|what|options|comparing|deciding)\b"], max_words=45)}),
+    Case("I6", "dialogue", ["What is the score of the cricket match going on right now?"],
+         "Says it cannot check live information; does not invent a score.",
+         {0: Check(require_any=[UNSURE], forbid=[r"\b\d+\s*(/|-|for)\s*\d+\b", r"\bwon\b"], max_words=50)}),
+    Case("I7", "dialogue", ["What is my grandfather's first name?"],
+         "Says it does not know.", {0: Check(require_any=[UNSURE], max_words=40)}),
+    Case("I8", "dialogue", ["How many trees were planted in Coimbatore in 1911?"],
+         "Admits not knowing an obscure figure; does not invent a number.",
+         {0: Check(require_any=[UNSURE], forbid=[r"\b\d{2,}\b(?<!1911)"], max_words=50)}),
+    Case("I9", "dialogue", ["last week i visit my uncle home and we was playing carrom"],
+         "Chat with mistakes: replies to the meaning, does not correct the grammar.",
+         {0: Check(require_any=[r"\b(fun|nice|great|sounds|enjoy|who won|carrom|uncle|lovely)\w*"],
+                   forbid=[r"\bshould be\b", r"\bcorrect (version|sentence)\b", r"\bgrammar\b"], max_words=50)}),
+    Case("I10", "dialogue", ['Is this sentence right? "My sister play the guitar every evening."'],
+         "Explicit check: gives the corrected sentence (plays).",
+         {0: Check(require=[r"\bplays\b"], max_words=60)}),
+    Case("I11", "dialogue", ["What's your name, and who built you?"],
+         "Answers both questions (Hibari, Kavimugil Rajasekar).",
+         {0: Check(require=[r"\bhibari\b", r"\bkavimugil\b|\brajasekar\b"], max_words=60, allow_intro=True)}),
+]
+
+CATEGORY_ORDER = ["basic", "context", "rephrase", "formal", "casual", "grammar", "preservation", "robustness", "spec_examples", "dialogue"]
 
 
 def eval_user_texts() -> List[str]:

@@ -134,7 +134,7 @@ def test_suite_covers_all_brief_categories():
     assert len({c.id for c in CASES}) == len(CASES)
     counts = {cat: sum(c.category == cat for c in CASES) for cat in CATEGORY_ORDER}
     assert counts == {"basic": 6, "context": 3, "rephrase": 5, "formal": 4, "casual": 3, "grammar": 5,
-                      "preservation": 3, "robustness": 7, "spec_examples": 7}
+                      "preservation": 3, "robustness": 7, "spec_examples": 7, "dialogue": 11}
     for c in CASES:
         assert c.checks and all(0 <= i < len(c.turns) for i in c.checks)
 
@@ -216,3 +216,15 @@ def test_train_script_refuses_missing_init_checkpoint(tmp_path):
 
 def test_all_tasks_have_natural_asks():
     assert set(NATURAL_ASKS) == set(TASKS)
+
+
+def test_dialogue_eval_prompts_are_held_out_from_dialogue_skill_data():
+    from koto.data.dialogue_skills import build_dialogue_skill_conversations
+    from koto.data.tasks import norm
+
+    train_users = {norm(m["content"]) for convs in build_dialogue_skill_conversations().values()
+                   for c in convs for m in c if m["role"] == "user"}
+    for case in CASES:
+        if case.category == "dialogue":
+            for t in case.turns:
+                assert norm(t) not in train_users, (case.id, t)
