@@ -1,6 +1,33 @@
 # 09 — Evaluation and Testing
 
-## Running an evaluation
+## Koto 1.1.0 suite (`evaluation/evaluate_upgrade.py`)
+
+54 cases in 10 categories (`koto/evaluation/upgrade_suite.py`): basic,
+context, rephrase, formal, casual, grammar, preservation, robustness, spec
+examples and — added for 1.1.0 — **dialogue** (11 held-out cases: context
+recall, clarification, honest limits, chat with mistakes vs. explicit
+correction, several questions). Run in `unrouted` and `routed` modes, greedy
+and sampled, with a 3-seed stability check and held-out loss per source.
+
+```bash
+python evaluation/evaluate_upgrade.py \
+  --checkpoint checkpoints/koto_1.1.0/best_model.pt --name koto_1.1.0 \
+  --data-dir data/processed_1.1.0 --train-file data/processed_1.1.0/train_conversations.json
+```
+
+| Routed, greedy | 1.0.0 | 1.1.0 |
+|---|---|---|
+| Pass rate (held-out only) | 16.7 % (13.7 %) | 53.7 % (52.9 %) |
+| basic / context | 66.7 % / 0 % | 83.3 % / 33.3 % |
+| rephrase / formal / casual | 0 / 0 / 0 % | 40 / 25 / 66.7 % |
+| grammar / preservation | 20 / 66.7 % | 100 / 100 % |
+| robustness / spec examples | 14.3 / 0 % | 28.6 / 28.6 % |
+| dialogue | 9.1 % | 54.5 % |
+
+Reports: `outputs/evaluation/koto_1.1.0.md`, `koto_1.0.0_rerun.md`,
+`legacy_1.1.0_vs_1.0.md`. Analysis: `19_KOTO_1.1.0_DEVELOPMENT_REPORT.md`.
+
+## Running the legacy evaluation
 
 ```bash
 python evaluation/evaluate.py \
@@ -99,7 +126,11 @@ PyTorch checkpoint. For v4 (report `outputs/metrics/parity_v4.json`):
 pytest tests       # Koto tests (engine tests: run pytest in the Hibari root)
 ```
 
-**Current status: 186 passed.**
+**Current status (2026-11-22): 59 passed** in the Koto repository
+(`tests/test_upgrade.py`, `tests/test_evaluation.py`) and **247 passed** in
+the engine (`pytest` in the Hibari root). The table below is the engine test
+breakdown from before the repository split (186 tests); since then the engine
+added `test_tasks.py`, `test_metrics.py` and `test_regressions.py`.
 
 | Test file | Tests | Covers |
 |---|---|---|

@@ -4,16 +4,28 @@ Versions follow `MAJOR.MINOR.PATCH`. Each new version is developed on its own
 branch (`release/<version>`). Experiment identifiers are recorded in every
 checkpoint's `run_metadata.experiment`.
 
-## [1.1.0] — in development (branch `release/1.1.0`)
+## [1.1.0] — trained and evaluated 2026-11-22, not yet released (branch `release/1.1.0`)
 
 Goal: natural conversation, use of earlier turns, and sentence rewriting
 (rephrase, grammar correction, formal / casual / polite, shorter, simpler)
 that returns only the rewritten text and keeps the meaning.
 
-**Status: implemented and tested; the 1.1.0 model has NOT been trained yet.**
-No capability below is claimed for a trained 1.1.0 checkpoint until the full
-run (`configs/training/koto_1.1.0.yaml`, experiment `koto-1.1.0`) has been
-trained and evaluated.
+**Status: trained (`checkpoints/koto_1.1.0/best_model.pt`, step 12,000) and
+evaluated against 1.0.0 on identical data. Not exported to GGUF or released.**
+Full results and limitations: `docs/19_KOTO_1.1.0_DEVELOPMENT_REPORT.md`.
+
+### Results (same data, same code as 1.0.0)
+| | 1.0.0 | 1.1.0 |
+|---|---|---|
+| 1.1.0 suite pass rate (routed, greedy) | 16.7 % | **53.7 %** |
+| … grammar / meaning preservation | 20 % / 66.7 % | **100 % / 100 %** |
+| … context / held-out dialogue | 0 % / 9.1 % | 33.3 % / 54.5 % |
+| Writing-task test perplexity (CoEdIT / ParaDetox) | 7.67 / 15.48 | **3.49 / 3.19** |
+| Open-conversation val perplexity (old split) | **20.86** | 22.39 (worse) |
+| Legacy suite heuristic relevance / grammar | 35.3 % / **94.8 %** | **54.9 %** / 89.7 % |
+
+Known regressions: slightly worse open-conversation perplexity on every
+general source; still invents facts (e.g. "The capital of Japan is Berlin").
 
 ### Added
 - `koto` Python package (`koto/`): `koto.data.curated`, `koto.data.rewrite`
@@ -78,7 +90,15 @@ trained and evaluated.
 - All active configs and scripts use Koto-relative paths instead of the
   pre-split `hibari/...` paths. The 1M-era `koto_1m` configs stay archived.
 
-### Baseline (1.0.0 on the 1.1.0 suite)
+### Evaluation
+- New held-out `dialogue` category in `koto.evaluation.upgrade_suite`
+  (11 cases: recall, clarification, honest limits, chat vs. correction,
+  several questions); test that its prompts are not in the dialogue-skill data.
+- Reports: `outputs/evaluation/koto_1.1.0.*`, `koto_1.0.0_rerun.*` (1.0.0 on
+  the final suite and data), `legacy_1.1.0_vs_1.0.*` (58-case suite and
+  old-split perplexity).
+
+### Baseline (1.0.0 on the 1.1.0 suite, before the dialogue category)
 See `outputs/evaluation/koto_1.0.0_baseline.md`. Pass rate 9.3 % (unrouted,
 greedy) / 18.6 % (routed, greedy); 0 % on rephrasing, formal, casual and
 context cases.

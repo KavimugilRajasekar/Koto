@@ -25,6 +25,8 @@
 | v4 | `koto_v4/best_model.pt` (step 11000) | **20.86** | full 12k-step train; most fluent, weaker on identity |
 | v5 | `koto_v5/` | — | fine-tune of v4 with writing help; training (2026-11-21) |
 | v6 | `koto_v6/` | — | full train including writing help; training (2026-11-21) |
+| **1.0.0** | `koto_start/best_model.pt` (= v4) | **20.86** | released; better open chit-chat |
+| **1.1.0** | `koto_1.1.0/best_model.pt` (step 12000) | 22.39 | writing tasks, dialogue skills; not yet released |
 
 `best_model.pt` in each run folder is the checkpoint to use. The top-level
 `checkpoints/best_model.pt` is an old v1 step-250 file and
@@ -67,6 +69,20 @@ hand-written polite / email set. See `16_DATASET_CATALOG.md` and
 | Rewrite cases (7) | 0 / 7, before writing-help training |
 | GGUF parity (llama.cpp vs PyTorch) | 6/6 identical greedy replies in all 4 formats |
 | Speed (Q8_0, llama.cpp, 6 threads) | ~5,000 tokens/s generation |
+
+## Evaluation (1.1.0 vs 1.0.0, same data, greedy)
+
+| Metric | 1.0.0 | 1.1.0 |
+|---|---|---|
+| Open-conversation val perplexity (old split) | **20.86** | 22.39 |
+| 1.1.0 suite pass rate (routed / unrouted) | 16.7 % / 9.3 % | **53.7 % / 50 %** |
+| Grammar correction cases | 1 / 5 | **5 / 5** |
+| Held-out dialogue cases | 1 / 11 | 6 / 11 |
+| Rewrite output-only rate | 75.9 % | 100 % |
+| Legacy heuristic relevance / grammar | 35.3 % / **94.8 %** | **54.9 %** / 89.7 % |
+
+1.1.0 still invents facts and handles emotional messages unreliably; see
+`docs/19_KOTO_1.1.0_DEVELOPMENT_REPORT.md`.
 
 Full results: `09_EVALUATION_AND_TESTING.md`. Limitations:
 `18_KNOWN_LIMITATIONS.md`.

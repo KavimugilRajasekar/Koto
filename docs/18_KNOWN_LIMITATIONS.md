@@ -4,6 +4,27 @@ Measured results are in `09_EVALUATION_AND_TESTING.md` and in the
 `outputs/metrics/eval_*.md` reports. This page explains what the
 numbers mean in practice.
 
+## Koto 1.1.0 (measured 2026-11-22)
+
+Details and transcripts: `19_KOTO_1.1.0_DEVELOPMENT_REPORT.md`.
+
+* **Open conversation got slightly worse.** Old-split validation perplexity
+  20.86 (1.0.0) → 22.39 (1.1.0), worse on every general source. The same 6M
+  parameters now also cover writing tasks.
+* **Still invents facts.** "The capital of Japan is Berlin"; an invented
+  weather forecast and a nonsense "prime minister" answer. The honest-limit
+  data helps mainly for question types close to its templates (obscure
+  figures, private facts), not for live data or general facts.
+* **Context recall is partial.** Some facts are recalled ("You are in
+  Coimbatore."), others come back wrong ("My name was Tancel." for Tanvir;
+  the user's name instead of their subject).
+* **Empathy and feedback are unreliable.** "I failed my driving test … I feel
+  useless" → "I am sure you did well on it."
+* **Writing tasks:** grammar correction passed 5 / 5 suite cases, but a
+  fresh, more broken sentence ("i am not understand what you trying to say")
+  was not corrected; formal rewrites pass 1 / 4.
+* **More variation between seeds** than 1.0.0 (routed pass agreement 0.96 → 0.85).
+
 ## Model capacity
 
 * **6.16 M parameters, trained from scratch on about 5 M supervised tokens
