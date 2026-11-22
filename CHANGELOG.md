@@ -4,6 +4,30 @@ Versions follow `MAJOR.MINOR.PATCH`. Each new version is developed on its own
 branch (`release/<version>`). Experiment identifiers are recorded in every
 checkpoint's `run_metadata.experiment`.
 
+## [1.3.0] — PREPARED 2026-11-22, not trained (experiment EXP-0006; engine 0.4.0)
+
+**Larger model** (owner's decision): `configs/model/koto_1.3.0_large.yaml`, d_model 512, 8 layers,
+d_ff 1536, **29,368,832 parameters** (1.x: 6,163,712). Same tokenizer, context and chat format.
+Training config `configs/training/koto_1.3.0_large.yaml` (LR 6e-4, 12,000 steps, ~11–13 h on CPU,
+names its own model config). The 6.16M configs remain as baselines (`koto_1.3.0.yaml` → `checkpoints/koto_1.3.0_6m`).
+
+Conversation-first mix (`configs/data/koto_1.3.0.yaml`, built in `data/processed_1.3.0`):
+93,509 train / 3,748 val / 911 test; natural multi-turn conversation 42.9% (1.2.1: ~30%),
+writing tasks 30.2% (~40%), single-turn generic-assistant data 7.6% (16.5%); 0 evaluation
+prompts in training. Measured in `outputs/data/mix_1.3.0_train.md` (vs `mix_1.2.1_train.md`).
+
+- `behaviour_version: 3`: disagreement, repair ("no, I meant…"), topic change, follow-ups,
+  reasons ("why?"), rewrite requests without text, interest recall, lost objects.
+- Builder: `general_source_caps` (smoltalk 6,000, oasst1 1,500), `general_dedup` (with
+  `general_dedup_exclude` for intentionally repeated sources), `general_quality_filter`,
+  `general_validate` — all off by default, so older configs rebuild unchanged.
+- `koto/evaluation/conversation_suite.py` — the 1.3.0 brief's regression prompts (15 cases);
+  `evaluate_behaviour.py --suite conversation`.
+- `scripts/dataset_report.py` — per-source statistics, quality, emotion coverage, contamination.
+- `training/train.py --resume`; a training YAML may set `model_config` (a different `--model-config`
+  is refused); 6.16M baselines `koto_1.3.0.yaml` / `koto_1.3.0_ft.yaml`; draft release profile.
+- Report: `docs/33_KOTO_1.3.0_DEVELOPMENT_REPORT.md`.
+
 ## [1.2.1] — PREPARED 2026-11-22, not trained (experiment EXP-0005)
 
 - Data: `behaviour_version: 2` — hostile family rebuilt (25 insults × 8 × 7 reply parts,

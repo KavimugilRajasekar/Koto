@@ -56,24 +56,31 @@ def _git_commit(path: Path) -> str:
 
 
 def train(
-    model_config_path: str = str(CONFIG_DIR / "model" / "koto.yaml"),
+    model_config_path: str | None = None,
     training_config_path: str = str(CONFIG_DIR / "training" / "koto.yaml"),
     tokenizer_dir: str = str(TOKENIZER_DIR),
     data_cache_dir: str | None = None,
     max_steps_override: int | None = None,
     checkpoint_path: str | None = None,
+    resume: bool = False,
 ) -> None:
     print("=" * 60)
     print("Training Hibari Koto (Multi-Dataset Empathy Dialogue Model)")
     print("=" * 60)
 
     # 1. Load Configurations
-    print(f"Loading model config from {model_config_path}...")
-    model_config = ModelConfig.from_yaml(resolve(model_config_path))
-
     print(f"Loading training config from {training_config_path}...")
     with open(resolve(training_config_path), "r", encoding="utf-8") as f:
         t_cfg = yaml.safe_load(f)
+
+    # The training YAML may name its model config (1.3.0+). A different --model-config is an
+    # error, so a run can never train a model of the wrong size into a version's output_dir.
+    yaml_model = t_cfg.pop("model_config", None)
+    if yaml_model and model_config_path and resolve(model_config_path).resolve() != resolve(yaml_model).resolve():
+        raise SystemExit(f"--model-config {model_config_path} differs from model_config {yaml_model} in {training_config_path}")
+    model_config_path = model_config_path or yaml_model or str(CONFIG_DIR / "model" / "koto.yaml")
+    print(f"Loading model config from {model_config_path}...")
+    model_config = ModelConfig.from_yaml(resolve(model_config_path))
 
     if max_steps_override is not None:
         t_cfg["max_steps"] = max_steps_override
@@ -189,6 +196,7 @@ def train(
         "koto_version": koto.__version__,
         "model_version": model_version,
         "model_config": model_config.to_dict(),
+        "model_config_file": str(model_config_path),
         "training_config": training_config_path,
         "training_config_values": {**t_cfg, "val_examples": val_limit},
         "data_cache_dir": data_cache_dir,
@@ -208,8 +216,9 @@ def train(
         try:
             return str(Path(p).resolve().relative_to(KOTO_ROOT))
         except (ValueError, TypeError):
-            return p
+            return str(p) if p is not None else None
     run_metadata["data_cache_dir"] = _rel(run_metadata["data_cache_dir"])
+    run_metadata["model_config_file"] = _rel(resolve(run_metadata["model_config_file"]))
     run_metadata["init_checkpoint"] = _rel(run_metadata["init_checkpoint"]) if run_metadata["init_checkpoint"] else None
     run_metadata["training_config_values"]["output_dir"] = _rel(run_metadata["training_config_values"]["output_dir"])
     print(json.dumps(run_metadata, indent=2))
@@ -225,6 +234,7 @@ def train(
         device=device,
         run_metadata=run_metadata,
         path_root=KOTO_ROOT,
+        resume_from=(Path(training_args.output_dir) / "last_checkpoint.pt") if resume else None,
     )
 
     print("Beginning training...")
@@ -278,8 +288,8 @@ def main():
     parser.add_argument(
         "--model-config",
         type=str,
-        default=str(CONFIG_DIR / "model" / "koto.yaml"),
-        help="Path to model config YAML",
+        default=None,
+        help="Path to model config YAML (default: model_config in the training YAML, else configs/model/koto.yaml)",
     )
     parser.add_argument(
         "--train-config",
@@ -311,6 +321,11 @@ def main():
         default=None,
         help="Start from this checkpoint (overrides init_checkpoint in the YAML)",
     )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Continue an interrupted run from <output_dir>/last_checkpoint.pt (same configs)",
+    )
     args = parser.parse_args()
 
     train(
@@ -320,6 +335,7 @@ def main():
         data_cache_dir=args.data_cache_dir,
         max_steps_override=args.max_steps,
         checkpoint_path=args.checkpoint,
+        resume=args.resume,
     )
 
 

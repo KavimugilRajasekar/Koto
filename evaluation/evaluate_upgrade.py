@@ -42,16 +42,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import koto  # noqa: E402  (makes the hibari engine importable)
 
 import torch  # noqa: E402
-from torch.utils.data import DataLoader  # noqa: E402
 
-from hibari.data.collator import DataCollatorForCausalLM  # noqa: E402
-from hibari.data.dataset import ConversationDataset  # noqa: E402
 from hibari.data.tokenizer import HibariTokenizer  # noqa: E402
+from hibari.evaluation.evaluator import evaluate_records  # noqa: E402
 from hibari.evaluation.metrics import char_ngram_f, distinct_n, mean  # noqa: E402
 from hibari.inference.conversation import HibariChatSession  # noqa: E402
 from hibari.inference.tasks import TASK_DECODING, parse_task_request  # noqa: E402
 from hibari.training.checkpoint import load_checkpoint  # noqa: E402
-from hibari.training.trainer import evaluate_loss  # noqa: E402
 from koto.evaluation.upgrade_suite import CASES, CATEGORY_ORDER, Case, score_turn  # noqa: E402
 from koto.paths import EVAL_OUTPUT_DIR, TOKENIZER_DIR, resolve  # noqa: E402
 
@@ -180,22 +177,15 @@ def stability(model, tok, routed: bool, seeds=(0, 1, 2)) -> Dict:
 
 
 def heldout_loss(model, tok, data_dir: Path) -> Dict:
+    """Per-source held-out loss for the val / test splits (hibari.evaluation.evaluate_records)."""
     out = {}
-    collate = DataCollatorForCausalLM(tok.pad_id)
     for split in ("val", "test"):
         f = data_dir / f"{split}_conversations.json"
         if not f.exists():
             continue
-        by_src = collections.defaultdict(list)
-        for rec in json.loads(f.read_text()):
-            by_src[rec.get("source", "unknown")].append(rec)
-        out[split] = {}
-        for src, items in sorted(by_src.items()):
-            ds = ConversationDataset(items, tok, max_seq_len=model.config.max_seq_len)
-            if len(ds) == 0:
-                continue
-            m = evaluate_loss(model, DataLoader(ds, batch_size=32, collate_fn=collate), torch.device("cpu"))
-            out[split][src] = {"loss": round(m["eval_loss"], 4), "perplexity": round(m["eval_perplexity"], 2), "examples": len(ds)}
+        res = evaluate_records(model, tok, json.loads(f.read_text()), batch_size=32)
+        out[split] = {src: {"loss": m["loss"], "perplexity": m["perplexity"], "examples": m["examples"]}
+                      for src, m in res.items() if src != "all"}
     return out
 
 

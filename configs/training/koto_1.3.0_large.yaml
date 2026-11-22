@@ -1,0 +1,28 @@
+# Koto 1.3.0 — FULL training of the LARGE model (29.4M parameters) from scratch. PREPARED, NOT RUN.
+# This is the configuration the 1.3.0 release profile expects (configs/release/koto_1.3.0.yaml).
+# Train (owner):  python training/train.py --train-config configs/training/koto_1.3.0_large.yaml
+#   (model_config below is used automatically; a different --model-config is refused)
+# Resume:         the same command with --resume
+# Data: data/processed_1.3.0 (93,509 examples; 2,922 steps per epoch at batch 32; 12,000 steps ~4.1 epochs).
+experiment: koto-1.3.0
+model_version: 1.3.0      # recorded in the checkpoint; must equal weights_version in the release profile
+model_config: configs/model/koto_1.3.0_large.yaml
+data_cache_dir: data/processed_1.3.0
+learning_rate: 6.0e-4     # lower than the 6M recipe (1e-3): wider model, same batch
+min_lr_ratio: 0.1
+weight_decay: 0.1
+warmup_steps: 1000
+max_steps: 12000
+batch_size: 32
+gradient_accumulation_steps: 1
+gradient_clip: 1.0
+checkpoint_every: 500     # long CPU run: a resumable checkpoint at most ~every 500 steps
+eval_every: 1000
+log_every: 100
+val_examples: 5000
+output_dir: checkpoints/koto_1.3.0_large
+save_best: true
+overwrite_output_dir: false
+early_stopping_patience: 4
+max_hours: 30.0           # estimate is well below this; it only stops a run that is far slower than expected
+seed: 42

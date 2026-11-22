@@ -1,0 +1,46 @@
+# Koto 1.3.0 — conversation-first data mix (PREPARED; built by scripts/build_mix.py, no downloads).
+# Same sources as 1.1.0 plus koto.data.behaviour (empathy, grief / sympathy /
+# good news, hostile messages, informal chat, context chains, complete e-mails)
+# and the identity change to "Koto, a conversational AI built on the Hibari
+# architecture" (system prompt + hand-written assistant turns).
+#   HF_HUB_OFFLINE=1 python scripts/build_mix.py --config configs/data/koto_1.2.0.yaml
+experiment: koto-1.3.0
+general_src: data/processed
+out_dir: data/processed_1.3.0
+tokenizer_dir: tokenizer
+max_seq_len: 256
+
+# identity v2: every example (general corpus included) uses this system prompt;
+# must equal system_prompt in configs/release/koto_1.2.0.yaml
+system_prompt: >-
+  You are Koto, a friendly and calm conversational AI built on the Hibari architecture. Keep replies short, kind and honest.
+identity: v2
+
+general_train: all
+# conversation-first (docs/33): cap single-turn generic-assistant sources; clean the general corpus
+general_source_caps: {smoltalk: 6000, oasst1: 1500}
+general_dedup: true
+general_dedup_exclude: [everyday_conversations]   # repeated 2x on purpose by prepare_data.py
+general_quality_filter: true
+general_validate: true
+curated_repeats: 3
+conversation_repeats: 4
+conversation_variants: 3
+emails: 400
+dialogue_skills_repeats: 2
+recall_conversations: 1500
+behaviour_repeats: 1                 # 1.2.0 used 3: the fixed replies were over-learned (docs/32)
+behaviour_version: 3                 # + conversation skills: disagreement, repair, topic change, follow-ups, reasons
+
+tasks:
+  coedit: {gec: 6000, paraphrase: 2500, simplification: 1200, clarity: 800}   # 1.2.x: writing tasks were ~40% of the mix
+  paradetox: 3000
+  smol_rewrite: 1500
+  polite_templated: 600
+  handwritten_repeats: 2              # conversation-first: tasks ~30% of the mix (1.2.x: ~40%)
+  task_repeats: {casual: 3, shorten: 2, formal: 3, correct_grammar: 2, rephrase: 1}
+
+canonical_share: 0.5
+val_pct: 4
+test_pct: 4
+seed: 130

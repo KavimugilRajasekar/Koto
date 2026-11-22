@@ -51,6 +51,7 @@ from typing import Dict, List  # noqa: E402
 import yaml  # noqa: E402
 
 from hibari.data.formatting import DEFAULT_SYSTEM_PROMPT  # noqa: E402
+from hibari.data.pipeline import QualityFilter, deduplicate, validate_conversation  # noqa: E402
 from hibari.data.tokenizer import HibariTokenizer  # noqa: E402
 from hibari.inference.tasks import parse_task_request  # noqa: E402
 from koto.data.behaviour import apply_identity_v2, build_behaviour_conversations  # noqa: E402
@@ -88,7 +89,9 @@ LICENCES = {
 def all_eval_texts() -> List[str]:
     texts = list(eval_user_texts())
     from koto.evaluation.behaviour_suite import eval_user_texts as behaviour_texts
+    from koto.evaluation.conversation_suite import eval_user_texts as conversation_texts
     texts += behaviour_texts()
+    texts += conversation_texts()
     for case in legacy_suite.CASES:
         texts += [t for r, t in case.turns if r == "user"]
     out = []
@@ -178,6 +181,34 @@ def main() -> None:
     cap = cfg.get("general_train", "all")
     if cap != "all":
         g_train = g_train[: int(cap)]
+    # 1.3.0+: conversation-first mix. All off unless set, so older configs rebuild unchanged.
+    src_caps = cfg.get("general_source_caps") or {}
+    if src_caps:
+        kept_by = collections.Counter()
+        capped = []
+        for r in g_train:
+            c = src_caps.get(r["source"])
+            if c is not None and kept_by[r["source"]] >= int(c):
+                continue
+            kept_by[r["source"]] += 1
+            capped.append(r)
+        stats["general_source_caps_dropped"] = len(g_train) - len(capped)
+        g_train = capped
+    if cfg.get("general_dedup"):
+        # sources repeated on purpose upstream (prepare_data.py `source_repeats`) keep their repeats
+        exclude = set(cfg.get("general_dedup_exclude") or [])
+        kept_ex = [r for r in g_train if r["source"] in exclude]
+        deduped, n_dup = deduplicate([r for r in g_train if r["source"] not in exclude])
+        g_train = deduped + kept_ex
+        rng.shuffle(g_train)
+        stats["general_duplicates_dropped"] = n_dup
+    if cfg.get("general_quality_filter"):
+        g_train, reasons = QualityFilter().apply(g_train)
+        stats["general_quality_rejections"] = reasons
+    if cfg.get("general_validate"):
+        bad = [r for r in g_train if validate_conversation(r["messages"])]
+        stats["general_schema_rejections"] = len(bad)
+        g_train = [r for r in g_train if not validate_conversation(r["messages"])]
     for r in g_train:
         if leaks(r["messages"]):
             leak_drops["general"] += 1

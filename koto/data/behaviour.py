@@ -442,6 +442,96 @@ def mood_conversations(rng: random.Random) -> List[Conv]:
     return out
 
 
+# ───────────────────────── 1.3.0 additions (behaviour_version: 3) ─────────────────────────
+# Conversational skills from the 1.3.0 brief. Wording is deliberately different from
+# koto.evaluation.conversation_suite (its prompts are also removed by the leak filter).
+
+OPINIONS = [("Is it better to wake up early?", "Many people find waking up early gives them quiet time to focus."),
+            ("Are video games a waste of time?", "Not necessarily. Many games are relaxing and some even build problem-solving skills."),
+            ("Should I learn Python or Java first?", "Python is often easier to start with because its syntax is simple."),
+            ("Is tea better than coffee?", "Tea usually has less caffeine, so some people find it gentler."),
+            ("Are cats better pets than dogs?", "Cats are often easier to care for, especially in a small home.")]
+DISAGREE_USER = ["I don't agree.", "nah, i don't think so", "That's not true at all.", "I see it differently.", "hmm, i disagree",
+                 "No, I think the opposite."]
+DISAGREE_ACK = ["That's fair, people see it differently.", "Fair point, it really depends on the person.", "I can see why you'd think that.",
+                "That's okay, you might be right."]
+DISAGREE_ASK = ["What makes you think so?", "What's your experience with it?", "How do you see it?", "Why do you feel that way?"]
+
+REPAIR_SETUPS = [("Can you recommend a book?", "Sure! \"The Hobbit\" is a fun adventure to start with."),
+                 ("What's a good place to visit?", "Kyoto is lovely, with its temples and gardens."),
+                 ("Help me plan my weekend.", "How about a short walk on Saturday and a movie on Sunday?")]
+REPAIR_USER = ["No, I meant something else.", "that's not my question", "You misunderstood me.", "no no, i was asking about something different",
+               "Not that, I meant for my little brother."]
+REPAIR_REPLY = ["Sorry, I misunderstood. What did you mean?", "My mistake! Could you tell me a bit more about what you're looking for?",
+                "Sorry about that. Can you explain what you had in mind?", "Ah, I see. Let me try again. What exactly do you need?"]
+
+TOPIC_SETUPS = [("I've been watching a lot of football lately.", "Nice! Do you have a favourite team?"),
+                ("My exams finished last week.", "That must be a relief! How did they go?"),
+                ("I tried baking bread yesterday.", "Fun! How did it turn out?")]
+TOPIC_USER = ["ok enough about that", "can we change the topic?", "let's talk about something different", "never mind that, new topic",
+              "forget it, let's chat about something else"]
+TOPIC_REPLY = ["Sure! What would you like to talk about?", "Of course. What's on your mind?", "Okay! Anything in particular you'd like to chat about?"]
+
+FOLLOW_SETUPS = [("Tell me a fun fact.", "Octopuses have three hearts.", "Two pump blood to the gills and one pumps it to the rest of the body."),
+                 ("Do you know anything about space?", "A day on Venus is longer than its year.",
+                  "Venus spins very slowly, so one rotation takes longer than one trip around the Sun."),
+                 ("Say something interesting about animals.", "Cows have best friends and get stressed when they're apart.",
+                  "Studies found cows are calmer when they're with a familiar companion."),
+                 ("Give me a fact about the ocean.", "Most of the ocean has never been explored.",
+                  "Over eighty percent of it hasn't been mapped in detail, because the deep sea is hard to reach.")]
+FOLLOW_USER = ["wow really?", "go on", "that's cool, say more", "and then?", "oh nice, explain", "huh, how?"]
+
+REASON_SETUPS = [("Is walking good exercise?", "Yes, walking is great exercise.", "It strengthens your heart and is easy on your joints."),
+                 ("Should I drink more water?", "Probably, most people don't drink enough.", "Water helps your energy, focus and digestion."),
+                 ("Is it okay to take short naps?", "Short naps can be really helpful.", "Twenty minutes can refresh you without making you groggy.")]
+REASON_USER = ["why?", "how come?", "what makes you say that?", "why do you say so?"]
+
+REWRITE_NO_TEXT = [("fix my sentence please", "Sure! Please share the sentence you'd like me to fix."),
+                   ("can you make it sound better", "Of course. Send me the text you'd like me to improve."),
+                   ("make it polite", "Happy to help. Which message would you like me to make polite?"),
+                   ("check my english", "Sure, paste the text you want me to check."),
+                   ("rephrase it for me", "Okay! What sentence should I rephrase?")]
+
+INTERESTS = [("I really like painting.", "painting"), ("I play the guitar a lot.", "playing the guitar"),
+             ("I'm into astronomy.", "astronomy"), ("I love cooking Italian food.", "cooking Italian food"),
+             ("I study biology.", "biology"), ("I enjoy hiking on weekends.", "hiking")]
+INTEREST_Q = ["what am I into?", "what did I say I like?", "do you remember my hobby?", "what do I enjoy?"]
+
+LOST_ITEMS = ["my wallet", "my phone", "my keys", "my favourite ring", "my notebook", "my bag"]
+LOST_USER = ["I lost {x} today.", "i think i lost {x}", "ugh, I can't find {x} anywhere."]
+LOST_REPLY = ["Oh no, that's stressful. Where did you last have it?", "I'm sorry, that's really frustrating. Have you checked the places you visited today?",
+              "That's annoying. Was it something important to you?"]
+
+
+def conversation_skill_conversations(rng: random.Random) -> List[Conv]:
+    out: List[Conv] = []
+    for q, a in OPINIONS:
+        for u in rng.sample(DISAGREE_USER, 3):
+            out.append([_u(q), _a(a), _u(u), _a(f"{_pick(rng, DISAGREE_ACK)} {_pick(rng, DISAGREE_ASK)}")])
+    for q, a in REPAIR_SETUPS:
+        for u in REPAIR_USER:
+            out.append([_u(q), _a(a), _u(u), _a(_pick(rng, REPAIR_REPLY))])
+    for q, a in TOPIC_SETUPS:
+        for u in TOPIC_USER:
+            out.append([_u(q), _a(a), _u(u), _a(_pick(rng, TOPIC_REPLY))])
+    for q, a, more in FOLLOW_SETUPS:
+        for u in rng.sample(FOLLOW_USER, 4):
+            out.append([_u(q), _a(a), _u(u), _a(more)])
+    for q, a, why in REASON_SETUPS:
+        for u in REASON_USER:
+            out.append([_u(q), _a(a), _u(u), _a(why)])
+    for u, r in REWRITE_NO_TEXT:
+        out.append([_u(u), _a(r)])
+    for tell, what in INTERESTS:
+        for q in rng.sample(INTEREST_Q, 2):
+            out.append([_u(tell), _a("That sounds fun! How did you get into it?"), _u("a friend got me started"),
+                        _a("That's a nice way to start."), _u(q), _a(f"You told me you're into {what}.")])
+    for x in LOST_ITEMS:
+        for u in rng.sample(LOST_USER, 2):
+            out.append([_u(u.format(x=x)), _a(_pick(rng, LOST_REPLY))])
+    return out
+
+
 # ───────────────────────── entry point ─────────────────────────
 
 
@@ -449,7 +539,9 @@ def build_behaviour_conversations(seed: int = 120, version: int = 1) -> Dict[str
     """Family name -> conversations (no system turn; build_mix adds it).
 
     ``version`` 1 = the 1.2.0 families (rebuilds 1.2.0 unchanged); 2 = 1.2.1: hostile
-    replies with many more variants, plus social, user-fact and mood families."""
+    replies with many more variants, plus social, user-fact and mood families;
+    3 = 1.3.0: adds conversation skills (disagreement, repair, topic change,
+    follow-ups, reasons, rewrite requests without text, interest recall, lost items)."""
     rng = random.Random(seed)
     fams = {
         "identity_v2": identity_conversations(rng),
@@ -466,4 +558,6 @@ def build_behaviour_conversations(seed: int = 120, version: int = 1) -> Dict[str
         fams["social"] = social_conversations()
         fams["user_facts"] = user_fact_conversations(rng2)
         fams["mood"] = mood_conversations(rng2)
+    if version >= 3:
+        fams["conversation_skills"] = conversation_skill_conversations(random.Random(seed + 2))
     return fams

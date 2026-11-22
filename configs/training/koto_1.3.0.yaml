@@ -1,0 +1,28 @@
+# Koto 1.3.0 — 6.16M BASELINE (same data, original size), for comparison with the large release model.
+# Data:   HF_HUB_OFFLINE=1 python scripts/build_mix.py --config configs/data/koto_1.3.0.yaml   (already built)
+# Train:  python training/train.py --model-config configs/model/koto.yaml --train-config configs/training/koto_1.3.0.yaml
+# Resume: add --resume to continue an interrupted run from checkpoints/koto_1.3.0/last_checkpoint.pt
+# Same 6.16M architecture and recipe as 1.1.0 / 1.2.0. 93,509 examples / batch 32 = 2,922 steps per
+# epoch, so 12,000 steps is ~4.1 epochs (1.2.0: ~4.0). Expect ~3.5 h on the owner's CPU.
+experiment: koto-1.3.0-6m
+model_config: configs/model/koto.yaml   # 6.16M BASELINE, not the 1.3.0 release (that is koto_1.3.0_large.yaml)
+model_version: 1.3.0      # recorded in the checkpoint; must equal weights_version in configs/release/koto_1.3.0.yaml
+data_cache_dir: data/processed_1.3.0
+learning_rate: 1.0e-3
+min_lr_ratio: 0.1
+weight_decay: 0.1
+warmup_steps: 500
+max_steps: 12000
+batch_size: 32
+gradient_accumulation_steps: 1
+gradient_clip: 1.0
+checkpoint_every: 1000
+eval_every: 1000
+log_every: 100
+val_examples: 5000
+output_dir: checkpoints/koto_1.3.0_6m
+save_best: true
+overwrite_output_dir: false
+early_stopping_patience: 4
+max_hours: 8.0
+seed: 42

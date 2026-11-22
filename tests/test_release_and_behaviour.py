@@ -24,7 +24,7 @@ from koto.data.tasks import norm
 from koto.evaluation.behaviour_suite import CASES, CATEGORY_ORDER, eval_user_texts, score_behaviour_turn
 from koto.paths import KOTO_ROOT
 
-FAMILIES = build_behaviour_conversations(seed=123, version=2)
+FAMILIES = build_behaviour_conversations(seed=123, version=3)
 HUMAN = re.compile(r"\bmy (wife|husband|kids?|son|daughter|mom|mum|dad|mother|father)\b|\bwhen i was (a kid|young|little)\b|\bi lost my\b", re.I)
 
 
@@ -47,9 +47,43 @@ def test_behaviour_replies_never_claim_human_experiences():
 
 
 def test_behaviour_suite_held_out_from_behaviour_data():
-    train_users = {norm(m["content"]) for convs in FAMILIES.values() for c in convs for m in c if m["role"] == "user"}
-    leaked = [t for t in eval_user_texts() if len(norm(t).split()) >= 3 and norm(t) in train_users]
-    assert not leaked, leaked
+    """The behaviour suite is absent from every behaviour family; the conversation suite
+    (added for 1.3.0) is absent from the 1.3.0 families. Older families may contain a
+    conversation-suite prompt (1.2.0 trained on "My friend is going through a difficult
+    time."); build_mix removes such conversations, checked on the built mix below."""
+    from koto.evaluation.conversation_suite import eval_user_texts as conversation_texts
+
+    def users(fams):
+        return {norm(m["content"]) for f in fams for c in FAMILIES[f] for m in c if m["role"] == "user"}
+
+    every = users(FAMILIES)
+    assert not [t for t in eval_user_texts() if len(norm(t).split()) >= 3 and norm(t) in every]
+    new = users(["conversation_skills"])
+    assert not [t for t in conversation_texts() if len(norm(t).split()) >= 3 and norm(t) in new]
+
+
+def test_built_1_3_0_mix_has_no_eval_prompts():
+    stats = KOTO_ROOT / "data" / "processed_1.3.0" / "data_stats.json"
+    if not stats.exists():
+        pytest.skip("1.3.0 mix not built")
+    import json
+    st = json.loads(stats.read_text())
+    assert st["eval_prompts_in_train_user_turns"] == []
+
+
+def test_conversation_suite_contains_every_brief_prompt():
+    from koto.evaluation import conversation_suite as cs
+    assert len({c.id for c in cs.CASES}) == len(cs.CASES)
+    assert {c.category for c in cs.CASES} == set(cs.CATEGORY_ORDER)
+    brief = ["hi", "how are you?", "what are you doing?", "that's interesting.", "tell me more.",
+             "I feel like nobody understands me.", "I had a difficult day.", "I'm disappointed with myself.",
+             "I lost something important today.", "My friend is going through a difficult time.", "My name is Alex.",
+             "I am studying computer science.", "I enjoy programming.", "What do you remember about my interests?",
+             "i dont know what to do now", "can u make this sentence better", "rewrite this in a polite way",
+             "correct my grammar", "I disagree with you.", "That's not what I meant.", "Why do you think so?",
+             "Anyway, let's talk about something else."]
+    turns = [t for c in cs.CASES for t in c.turns]
+    assert all(b in turns for b in brief), [b for b in brief if b not in turns]
 
 
 def test_identity_v2_rewrite():
@@ -62,20 +96,43 @@ def test_identity_v2_rewrite():
         assert "Hibari Koto" not in c[-1]["content"]
 
 
-@pytest.mark.parametrize("ver", ["1.2.0", "1.2.1"])
-def test_1_2_x_configs_agree(ver):
+@pytest.mark.parametrize("ver,train_cfg", [("1.2.0", "koto_1.2.0"), ("1.2.1", "koto_1.2.1"), ("1.3.0", "koto_1.3.0_large")])
+def test_1_2_x_configs_agree(ver, train_cfg):
+    """Data config, training config and release profile of a version agree (prompt, version,
+    data directory, output directory and — when the training YAML names one — model config)."""
     data = yaml.safe_load((KOTO_ROOT / f"configs/data/koto_{ver}.yaml").read_text())
-    train = yaml.safe_load((KOTO_ROOT / f"configs/training/koto_{ver}.yaml").read_text())
+    train = yaml.safe_load((KOTO_ROOT / f"configs/training/{train_cfg}.yaml").read_text())
     prof = ModelProfile.load(KOTO_ROOT / f"configs/release/koto_{ver}.yaml")
     assert data["system_prompt"].strip() == prof.system_prompt == prof.training_system_prompt.strip() == SYSTEM_PROMPT_V2
     assert data["identity"] == "v2"
     assert str(train["model_version"]) == prof.weights_version == prof.version == ver
     assert train["data_cache_dir"] == data["out_dir"]
-    assert train["output_dir"] == f"checkpoints/koto_{ver}"
+    assert str(Path(prof.checkpoint).parent) == train["output_dir"]
+    if "model_config" in train:
+        assert train["model_config"] == prof.model_config
     if prof.training_status == "COMPLETED":
         assert prof.checkpoint_sha256, "a trained version must record its checkpoint hash"
     else:
         assert prof.training_status == "NOT_STARTED" and not prof.checkpoint_sha256
+
+
+def test_1_3_0_is_the_large_model():
+    from hibari.model.config import ModelConfig
+    prof = ModelProfile.load(KOTO_ROOT / "configs/release/koto_1.3.0.yaml")
+    cfg = ModelConfig.from_yaml(KOTO_ROOT / prof.model_config)
+    assert cfg.estimate_parameters() == 29_368_832
+    assert (cfg.vocab_size, cfg.max_seq_len) == (4096, 256)          # same tokenizer and context as 1.x
+    base = ModelConfig.from_yaml(KOTO_ROOT / "configs/model/koto.yaml")
+    assert base.estimate_parameters() == 6_163_712                    # the 6.16M config stays supported
+
+
+def test_train_refuses_model_config_that_differs_from_training_yaml():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("koto_train", KOTO_ROOT / "training" / "train.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    with pytest.raises(SystemExit, match="differs from model_config"):
+        mod.train(model_config_path="configs/model/koto.yaml", training_config_path="configs/training/koto_1.3.0_large.yaml")
 
 
 def test_behaviour_v1_unchanged_by_v2_families():

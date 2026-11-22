@@ -81,3 +81,22 @@ configs/
 | `device` | `cpu` | |
 
 The same sampling values are in the Ollama Modelfile.
+
+
+## Data mix keys added in 1.2.0 – 1.3.0 (`scripts/build_mix.py`)
+
+All default to off / the old value, so older data configs rebuild unchanged.
+
+| Key | Version | Meaning |
+|---|---|---|
+| `system_prompt` | 1.2.0 | prompt used in every example, replacing the one stored in general-corpus records |
+| `identity` | 1.2.0 | `v2` rewrites hand-written assistant turns to "Koto, built on Hibari" |
+| `behaviour_repeats` | 1.2.0 | repeats of `koto.data.behaviour` conversations (0 = off) |
+| `behaviour_version` | 1.2.1 | 1 = 1.2.0 families; 2 = + social, user facts, mood, varied insult replies; 3 = + conversation skills |
+| `general_source_caps` | 1.3.0 | per-source cap on general training examples, e.g. `{smoltalk: 6000}` |
+| `general_dedup` / `general_dedup_exclude` | 1.3.0 | drop exact duplicate general conversations, except listed sources (repeated on purpose) |
+| `general_quality_filter` | 1.3.0 | `hibari.data.pipeline.QualityFilter` on general training data |
+| `general_validate` | 1.3.0 | drop general conversations that fail `validate_conversation` |
+
+Training YAML: `model_version` (1.2.0) is recorded in the checkpoint; `train.py --resume` (1.3.0)
+continues `<output_dir>/last_checkpoint.pt`.

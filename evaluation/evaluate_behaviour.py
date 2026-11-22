@@ -43,7 +43,11 @@ from hibari.inference.conversation import HibariChatSession  # noqa: E402
 from hibari.inference.safety import assess_message  # noqa: E402
 from hibari.release import ModelProfile  # noqa: E402
 from hibari.training.checkpoint import load_checkpoint  # noqa: E402
-from koto.evaluation.behaviour_suite import CASES, CATEGORY_ORDER, BCase, score_behaviour_turn  # noqa: E402
+from koto.evaluation import behaviour_suite, conversation_suite  # noqa: E402
+from koto.evaluation.behaviour_suite import BCase, score_behaviour_turn  # noqa: E402
+
+SUITES = {"behaviour": behaviour_suite, "conversation": conversation_suite}
+CASES, CATEGORY_ORDER = behaviour_suite.CASES, behaviour_suite.CATEGORY_ORDER
 from koto.paths import EVAL_OUTPUT_DIR, resolve  # noqa: E402
 
 
@@ -138,7 +142,7 @@ def esc(s: str, n: int = 260) -> str:
 
 
 def to_markdown(rep: Dict) -> str:
-    L = [f"# Koto behaviour evaluation — `{rep['name']}`", "",
+    L = [f"# Koto {rep.get('suite', 'behaviour')} evaluation — `{rep['name']}`", "",
          f"Profile `{rep['profile']}` — model {rep['model_version']}, weights {rep['weights_version']}, checkpoint `{rep['checkpoint']}`  ",
          f"Generated {rep['generated']} on {rep['machine']}. Decoding: {rep['reply_settings']}.", "",
          "Scores are automatic rule checks written for this suite (not the reply critic's rules); chrF is lexical similarity, "
@@ -179,7 +183,11 @@ def main() -> None:
     ap.add_argument("--ollama-model", default=None)
     ap.add_argument("--ollama-host", default="http://127.0.0.1:11434")
     ap.add_argument("--out-dir", default=str(EVAL_OUTPUT_DIR))
+    ap.add_argument("--suite", choices=sorted(SUITES), default="behaviour",
+                    help="behaviour (52 held-out cases) or conversation (the 1.3.0 brief's regression prompts)")
     a = ap.parse_args()
+    global CASES, CATEGORY_ORDER
+    CASES, CATEGORY_ORDER = SUITES[a.suite].CASES, SUITES[a.suite].CATEGORY_ORDER
 
     torch.manual_seed(0)
     prof = ModelProfile.load(resolve(a.profile))
@@ -188,7 +196,7 @@ def main() -> None:
     loaded = load_checkpoint(ckpt)
     model = loaded["model"].eval()
     reply_kw = prof.inference.reply_kwargs()
-    rep = {"name": a.name, "profile": prof.relpath(prof.source), "model_version": prof.version, "weights_version": prof.weights_version,
+    rep = {"name": a.name, "suite": a.suite, "profile": prof.relpath(prof.source), "model_version": prof.version, "weights_version": prof.weights_version,
            "checkpoint": prof.relpath(ckpt), "step": loaded["step"], "generated": time.strftime("%Y-%m-%d %H:%M:%S"),
            "machine": f"{platform.machine()}, torch {torch.__version__}", "reply_settings": reply_kw, "runs": {}}
     for p in a.pipelines:
