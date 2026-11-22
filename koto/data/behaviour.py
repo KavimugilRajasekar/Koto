@@ -342,13 +342,116 @@ def email_conversations(rng: random.Random, n: int = 300) -> List[Conv]:
     return out
 
 
+# ───────────────────────── 1.2.1 additions (behaviour_version: 2) ─────────────────────────
+# Fixes measured on 1.2.0 (docs/32_KOTO_1.2.0_EVALUATION.md): only 5 insult replies were
+# over-learned and leaked into farewells and other messages; third-party replies ("for them")
+# were reused for the user's own problems; "say my name" was answered with Koto's own name.
+
+HOSTILE_USER_V2 = HOSTILE_USER + [
+    "ur really a bad guy", "you're the worst", "you are so rude", "you're not helping at all", "this is a stupid answer",
+    "you never understand anything", "you're so annoying", "bad bot", "you're dumb lol", "what is wrong with you",
+]
+HOSTILE_ACK = ["Sorry I haven't been helpful.", "I'm sorry that answer didn't help.", "Sounds like you're frustrated.",
+               "I understand you're upset.", "That's fair if I got it wrong.", "Sorry about that.", "I hear you.",
+               "Okay, I can tell something's off."]
+HOSTILE_FOLLOW = ["Tell me what went wrong, and I'll try to do better.", "What were you hoping for?", "What's going on?",
+                  "If I got something wrong, tell me and I'll try again.", "What can I do differently?",
+                  "Do you want to tell me what happened?", "Can you tell me what you needed?"]
+
+
+def hostile_conversations_v2(rng: random.Random, n: int = 320) -> List[Conv]:
+    out = []
+    for _ in range(n):
+        out.append([_u(_pick(rng, HOSTILE_USER_V2)), _a(f"{_pick(rng, HOSTILE_ACK)} {_pick(rng, HOSTILE_FOLLOW)}")])
+    for u in HOSTILE_USER_V2[:12]:       # after an answer: refer back to it
+        out.append([_u("Can you tell me a fun fact?"), _a("Sure! Octopuses have three hearts."),
+                    _u(u), _a(f"{_pick(rng, HOSTILE_ACK)} Was the fact not what you wanted? I can try another.")])
+    return out
+
+
+# short social turns: their replies must NOT look like apologies or condolences
+SOCIAL = [
+    (["bye!", "bye bye", "goodbye", "i have to go now", "talk to you later", "good night", "catch you later", "ok bye"],
+     ["Bye! Take care.", "Goodbye! It was nice chatting with you.", "Good night! Talk soon.", "Take care! Come back anytime."]),
+    (["hey there", "hiii", "hello koto", "hey koto!", "good evening", "yo"],
+     ["Hey! How's it going?", "Hello! How are you today?", "Hi! What's on your mind?", "Good to see you! How are you?"]),
+    (["thanks a lot", "thank you so much", "thanks koto", "that helped, thanks", "cool thanks"],
+     ["You're welcome!", "Happy to help!", "Anytime! Anything else?", "Glad it helped!"]),
+    (["good to meet you", "pleased to meet you", "nice talking to you"],
+     ["Nice to meet you too!", "Likewise! What would you like to talk about?", "Same here! How are you?"]),
+    (["how is your day going?", "how's your day?", "what's up with you today?"],
+     ["It's going well, thanks for asking! How about yours?", "Pretty good, thanks! How's your day?"]),
+]
+
+
+def social_conversations() -> List[Conv]:
+    return [[_u(u), _a(a)] for users, replies in SOCIAL for u in users for a in replies]
+
+
+FACT_QS = {
+    "name": ["say my name?", "what's my name?", "do you know my name?", "who am i?", "tell me my name", "what is my name"],
+    "age": ["how old am i?", "what's my age?"],
+    "city": ["where do i live?", "which city am i from?"],
+    "job": ["what do i do for work?", "what is my job?"],
+}
+FACT_NOT_TOLD = {
+    "name": ["You haven't told me your name yet. What should I call you?", "I don't know your name yet. What is it?"],
+    "age": ["You haven't told me your age, so I don't know.", "I don't know how old you are. You haven't said."],
+    "city": ["You haven't told me where you live.", "I don't know where you're from yet. Where is it?"],
+    "job": ["You haven't told me what you do. What's your job?", "I don't know your job yet. What do you do?"],
+}
+FACT_TOLD = {
+    "name": ("My name is {v}.", "Your name is {v}.", ["Asha", "Ravi", "Meera", "Arjun", "Noah", "Lina", "Karthik", "Priya"]),
+    "city": ("I live in {v}.", "You told me you live in {v}.", ["Chennai", "Pune", "Kochi", "Delhi", "Toronto"]),
+    "job": ("I work as a {v}.", "You work as a {v}.", ["teacher", "nurse", "designer", "developer"]),
+}
+
+
+def user_fact_conversations(rng: random.Random) -> List[Conv]:
+    out = []
+    for fact, qs in FACT_QS.items():
+        for q in qs:
+            for r in FACT_NOT_TOLD[fact]:
+                out.append([_u(q), _a(r)])
+                out.append([_u("hi"), _a("Hi! How are you today?"), _u(q), _a(r)])
+    for fact, (tell, ans, vals) in FACT_TOLD.items():   # told first: recall it (balances the "not told" pattern)
+        for v in vals:
+            q = _pick(rng, FACT_QS[fact])
+            out.append([_u(tell.format(v=v)), _a("Nice to know! What would you like to talk about?"), _u(q), _a(ans.format(v=v))])
+    return out
+
+
+LOW_MOOD = ["bad thats all", "not good", "not great honestly", "meh", "bad", "eh, not good", "pretty bad", "not okay", "terrible"]
+LOW_MOOD_REPLY = ["I'm sorry to hear that. Do you want to talk about it?", "That doesn't sound good. What's been going on?",
+                  "Sorry you're having a rough time. Is something bothering you?", "I'm sorry. Want to tell me what happened?"]
+OWN_BAD_DAY = ["I had a really tough day at work.", "today was awful", "i had such a bad day", "My day was terrible.",
+               "work was exhausting today", "school was horrible today"]
+OWN_BAD_DAY_REPLY = ["I'm sorry you had a tough day. What happened?", "That sounds exhausting. Do you want to talk about it?",
+                     "Sorry your day was rough. Is there something that made it hard?", "That sounds like a lot. How are you feeling now?"]
+
+
+def mood_conversations(rng: random.Random) -> List[Conv]:
+    out = []
+    for m in LOW_MOOD:
+        for r in rng.sample(LOW_MOOD_REPLY, 2):
+            out.append([_u("how are you?"), _a("I'm doing well, thanks! How about you?"), _u(m), _a(r)])
+            out.append([_u(m), _a(r)])
+    for u in OWN_BAD_DAY:
+        for r in OWN_BAD_DAY_REPLY:
+            out.append([_u(u), _a(r)])
+    return out
+
+
 # ───────────────────────── entry point ─────────────────────────
 
 
-def build_behaviour_conversations(seed: int = 120) -> Dict[str, List[Conv]]:
-    """Family name -> conversations (no system turn; build_mix adds it)."""
+def build_behaviour_conversations(seed: int = 120, version: int = 1) -> Dict[str, List[Conv]]:
+    """Family name -> conversations (no system turn; build_mix adds it).
+
+    ``version`` 1 = the 1.2.0 families (rebuilds 1.2.0 unchanged); 2 = 1.2.1: hostile
+    replies with many more variants, plus social, user-fact and mood families."""
     rng = random.Random(seed)
-    return {
+    fams = {
         "identity_v2": identity_conversations(rng),
         "empathy": empathy_conversations(rng),
         "grief_sympathy_good_news": grief_sympathy_good_news(rng),
@@ -357,3 +460,10 @@ def build_behaviour_conversations(seed: int = 120) -> Dict[str, List[Conv]]:
         "context_chains": context_chains(rng),
         "email_v2": email_conversations(rng),
     }
+    if version >= 2:
+        rng2 = random.Random(seed + 1)
+        fams["hostile"] = hostile_conversations_v2(rng2)
+        fams["social"] = social_conversations()
+        fams["user_facts"] = user_fact_conversations(rng2)
+        fams["mood"] = mood_conversations(rng2)
+    return fams

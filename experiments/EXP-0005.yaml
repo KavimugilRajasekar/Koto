@@ -1,0 +1,36 @@
+id: EXP-0005
+model: koto
+model_version: 1.2.1
+date: 2026-11-22
+objective: >-
+  Keep the 1.2.0 gains (writing, empathy for situations, calm replies to insults)
+  without its regressions (rewriting, insult replies leaking into ordinary turns).
+problem: >-
+  1.2.0 (EXP-0004): reformulation 0.67 -> 0.44 (behaviour suite, release pipeline,
+  3 seeds); "see you later!" -> "Sorry I haven't been helpful..."; "say my name?" ->
+  Koto's own name; own bad day answered with third-party sympathy ("...for them").
+  Cause: behaviour data repeated 3x with few fixed replies (5 for insults).
+source_changes:
+  - repo: koto
+    files: [koto/data/behaviour.py (behaviour_version 2), scripts/build_mix.py]
+  - repo: hibari
+    files: [src/hibari/inference/intent.py, src/hibari/inference/reranking.py, src/hibari/inference/conversation.py]
+datasets: [configs/data/koto_1.2.1.yaml]
+configs: [configs/model/koto.yaml, configs/training/koto_1.2.1.yaml, configs/release/koto_1.2.1.yaml]
+checkpoint: null
+training:
+  status: NOT_STARTED        # the owner runs and authorises training
+  authorized_by: null
+  config: configs/training/koto_1.2.1.yaml
+evaluation:
+  methodology:
+    - evaluation/evaluate_behaviour.py --profile configs/release/koto_1.2.1.yaml --seeds 0 1 2, compared with koto_1.1.1_behaviour_r2 and koto_1.2.0_behaviour_r2
+    - evaluation/evaluate_upgrade.py for the rewriting regression
+  reports: []
+results: {}
+failures: []
+improvements: []
+limitations: [same 6.2M architecture; facts, identity questions and article errors are expected to stay weak]
+conclusion: >-
+  Prepared. Accept 1.2.1 only if reformulation returns to >= 0.67 and the overall
+  release pass rate beats 1.1.1 on the same suite and seeds.

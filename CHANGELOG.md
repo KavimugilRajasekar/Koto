@@ -4,16 +4,25 @@ Versions follow `MAJOR.MINOR.PATCH`. Each new version is developed on its own
 branch (`release/<version>`). Experiment identifiers are recorded in every
 checkpoint's `run_metadata.experiment`.
 
-## [1.2.0] — PREPARED 2026-11-22, not trained (experiment EXP-0004)
+## [1.2.1] — PREPARED 2026-11-22, not trained (experiment EXP-0005)
 
-- Data: `koto.data.behaviour` (identity v2, empathy, grief / sympathy / good news,
-  hostile messages, informal chat, context chains, complete e-mails), new system
-  prompt "You are Koto, a friendly and calm conversational AI built on the Hibari
-  architecture. …" in every example; `configs/data/koto_1.2.0.yaml`, built in
-  `data/processed_1.2.0` (112,605 train examples).
-- Configs: `configs/training/koto_1.2.0.yaml` (same 6.2M architecture),
-  optional `configs/model/koto_1.2.0_large.yaml` (~26M), draft
-  `configs/release/koto_1.2.0.yaml`. Training is run by the owner.
+- Data: `behaviour_version: 2` — hostile family rebuilt (25 insults × 8 × 7 reply parts,
+  plus "after an answer" turns), new `social` (farewells / greetings / thanks that are not
+  apologies), `user_facts` ("say my name?" never told → "You haven't told me…"), `mood`
+  ("bad thats all", own bad day); `behaviour_repeats` 3 → 1; rewriting up-weighted
+  (`handwritten_repeats` 3; formal 4, correct_grammar 2, rephrase 2).
+- Built in `data/processed_1.2.1` (133,300 train examples; 0 evaluation prompts in training).
+- Configs: `configs/data/koto_1.2.1.yaml`, `configs/training/koto_1.2.1.yaml`, draft `configs/release/koto_1.2.1.yaml`.
+
+## [1.2.0] — trained 2026-11-22, NOT released (experiment EXP-0004)
+
+Trained by the owner (14,000 steps, best eval loss 2.739). Evaluation: `docs/32_KOTO_1.2.0_EVALUATION.md`.
+
+- Learned the identity "I'm Koto, a conversational AI built on the Hibari architecture".
+- Better: writing 0.25 → 0.50, context 0.40 → 0.47, empathy 0.70 → 0.74 (behaviour suite, release pipeline, 3 seeds).
+- Worse: reformulation 0.67 → 0.44; insult replies leak into ordinary turns ("see you later!" → an apology).
+- Overall release pass rate 0.648 vs 1.1.1's 0.660 → 1.1.1 remains the current release.
+- GGUFs with provenance in `releases/exported/1.2.0/` (llama.cpp greedy parity 11/11 on every variant).
 
 ## [1.1.1] — 2026-11-22 (weights unchanged: 1.1.0; engine 0.3.0; experiment EXP-0003)
 

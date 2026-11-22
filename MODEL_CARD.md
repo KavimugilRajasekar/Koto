@@ -28,7 +28,8 @@
 | **1.0.0** | `koto_start/best_model.pt` (= v4) | **20.86** | released; better open chit-chat |
 | **1.1.0** | `koto_1.1.0/best_model.pt` (step 12000) | 22.39 | writing tasks, dialogue skills; not yet released |
 | **1.1.1** | `koto_1.1.0/best_model.pt` (unchanged) | 22.39 | current: same weights + reranking, normalisation, provenance-checked GGUFs (`releases/exported/1.1.1/`) |
-| 1.2.0 | `koto_1.2.0/` | — | data prepared (empathy, hostility, identity "Koto, built on Hibari"); not trained |
+| 1.2.0 | `koto_1.2.0/best_model.pt` (step 14000) | — | trained 2026-11-22; identity "Koto, built on Hibari"; better writing / empathy, worse rewriting; **not released** (docs/32) |
+| 1.2.1 | `koto_1.2.1/` | — | data prepared (fewer repeats, more reply variety, rewriting up-weighted); not trained |
 
 > The GGUFs directly in `releases/exported/` contain the **1.0.0** weights (see `releases/exported/README.md`). Use `releases/exported/1.1.1/`.
 

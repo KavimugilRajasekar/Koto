@@ -15,10 +15,12 @@ the engine repository: [`../../agents/`](../../agents/README.md)
 
 ## Koto-specific facts
 - Current release: **1.1.1** (`configs/release/koto_1.1.1.yaml`, weights `checkpoints/koto_1.1.0`).
-- Next: **1.2.0** — data built in `data/processed_1.2.0`, training NOT STARTED (`experiments/EXP-0004.yaml`).
+- **1.2.0** trained but NOT released (rewriting regression; `docs/32`, `experiments/EXP-0004.yaml`).
+- Next: **1.2.1** — data built in `data/processed_1.2.1`, training NOT STARTED (`experiments/EXP-0005.yaml`).
+- Work branch: `release/1.2.0`; tags `v1.1.0`, `v1.1.1`.
 - `releases/exported/*.gguf` (top level) are **1.0.0** weights; use `releases/exported/1.1.1/`.
 - Decoding defaults: only `configs/inference/koto.yaml`.
-- Behaviour spec `docs/28`, data standards `docs/29`, model template `docs/30`, latest report `docs/31`.
+- Behaviour spec `docs/28`, data standards `docs/29`, model template `docs/30`, reports `docs/31` (1.1.1), `docs/32` (1.2.0).
 
 ## Quick commands (from this directory)
 ```bash

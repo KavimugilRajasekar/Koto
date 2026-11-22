@@ -245,7 +245,7 @@ def main() -> None:
     if bh_repeats > 0:
         bh_split = collections.Counter()
         seen_bh = set()
-        for family, convs in build_behaviour_conversations(seed=seed + 3).items():
+        for family, convs in build_behaviour_conversations(seed=seed + 3, version=int(cfg.get("behaviour_version", 1))).items():
             for c in convs:
                 key = " | ".join(norm(m["content"]) for m in c)
                 if key in seen_bh:

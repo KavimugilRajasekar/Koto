@@ -24,7 +24,7 @@ from koto.data.tasks import norm
 from koto.evaluation.behaviour_suite import CASES, CATEGORY_ORDER, eval_user_texts, score_behaviour_turn
 from koto.paths import KOTO_ROOT
 
-FAMILIES = build_behaviour_conversations(seed=123)
+FAMILIES = build_behaviour_conversations(seed=123, version=2)
 HUMAN = re.compile(r"\bmy (wife|husband|kids?|son|daughter|mom|mum|dad|mother|father)\b|\bwhen i was (a kid|young|little)\b|\bi lost my\b", re.I)
 
 
@@ -62,16 +62,32 @@ def test_identity_v2_rewrite():
         assert "Hibari Koto" not in c[-1]["content"]
 
 
-def test_1_2_0_configs_agree():
-    data = yaml.safe_load((KOTO_ROOT / "configs/data/koto_1.2.0.yaml").read_text())
-    train = yaml.safe_load((KOTO_ROOT / "configs/training/koto_1.2.0.yaml").read_text())
-    prof = ModelProfile.load(KOTO_ROOT / "configs/release/koto_1.2.0.yaml")
+@pytest.mark.parametrize("ver", ["1.2.0", "1.2.1"])
+def test_1_2_x_configs_agree(ver):
+    data = yaml.safe_load((KOTO_ROOT / f"configs/data/koto_{ver}.yaml").read_text())
+    train = yaml.safe_load((KOTO_ROOT / f"configs/training/koto_{ver}.yaml").read_text())
+    prof = ModelProfile.load(KOTO_ROOT / f"configs/release/koto_{ver}.yaml")
     assert data["system_prompt"].strip() == prof.system_prompt == prof.training_system_prompt.strip() == SYSTEM_PROMPT_V2
     assert data["identity"] == "v2"
-    assert str(train["model_version"]) == prof.weights_version == prof.version == "1.2.0"
+    assert str(train["model_version"]) == prof.weights_version == prof.version == ver
     assert train["data_cache_dir"] == data["out_dir"]
-    assert prof.training_status == "NOT_STARTED"
-    assert not (KOTO_ROOT / train["output_dir"] / "best_model.pt").exists() or prof.checkpoint_sha256
+    assert train["output_dir"] == f"checkpoints/koto_{ver}"
+    if prof.training_status == "COMPLETED":
+        assert prof.checkpoint_sha256, "a trained version must record its checkpoint hash"
+    else:
+        assert prof.training_status == "NOT_STARTED" and not prof.checkpoint_sha256
+
+
+def test_behaviour_v1_unchanged_by_v2_families():
+    """1.2.1 families must not change the 1.2.0 data (reproducibility)."""
+    v1 = build_behaviour_conversations(seed=123, version=1)
+    v2 = build_behaviour_conversations(seed=123, version=2)
+    assert set(v2) > set(v1)
+    for fam in v1:
+        if fam != "hostile":
+            assert v1[fam] == v2[fam], fam
+    for c in v2["social"]:                      # social replies are not apologies / condolences
+        assert not re.search(r"\bsorry\b|what went wrong", c[-1]["content"], re.I), c
 
 
 def test_1_1_1_profile_loads_and_is_consistent():

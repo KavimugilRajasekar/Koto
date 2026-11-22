@@ -3,6 +3,7 @@
 | Location | Weights | Provenance | Status |
 |---|---|---|---|
 | `1.1.1/` | 1.1.0 (`checkpoints/koto_1.1.0/best_model.pt`) | `hibari.*` metadata, hashes in `configs/release/koto_1.1.1.yaml` | **current release** |
+| `1.2.0/` | 1.2.0 (`checkpoints/koto_1.2.0/best_model.pt`) | `hibari.*` metadata, hashes in `configs/release/koto_1.2.0.yaml` | trained and evaluated, **not released** (rewriting regression, `docs/32_KOTO_1.2.0_EVALUATION.md`) |
 | `1.1.0/Hibari-Koto-F32.gguf` | 1.1.0 | none (exported before provenance existed) | superseded by `1.1.1/` (same weights) |
 | `Hibari-Koto-{F32,F16,Q8_0,Q4_K_M}.gguf` (this directory) | **1.0.0** (`koto_start`, step 11000) | none; labelled "koto_v4", `general.name` Hibari-Koto-Plus, `general.version` 2.0 | **legacy** — kept, not deleted |
 

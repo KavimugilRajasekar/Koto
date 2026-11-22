@@ -203,6 +203,15 @@ def train(
         "train_file_sha256": hashlib.sha256(train_cache_path.read_bytes()).hexdigest(),
         "torch": str(torch.__version__),
     }
+    # recorded paths are repo-relative: the metadata goes into committed files
+    def _rel(p):
+        try:
+            return str(Path(p).resolve().relative_to(KOTO_ROOT))
+        except (ValueError, TypeError):
+            return p
+    run_metadata["data_cache_dir"] = _rel(run_metadata["data_cache_dir"])
+    run_metadata["init_checkpoint"] = _rel(run_metadata["init_checkpoint"]) if run_metadata["init_checkpoint"] else None
+    run_metadata["training_config_values"]["output_dir"] = _rel(run_metadata["training_config_values"]["output_dir"])
     print(json.dumps(run_metadata, indent=2))
 
     # 7. Start Training
@@ -215,6 +224,7 @@ def train(
         args=training_args,
         device=device,
         run_metadata=run_metadata,
+        path_root=KOTO_ROOT,
     )
 
     print("Beginning training...")
