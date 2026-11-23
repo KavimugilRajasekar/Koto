@@ -1,0 +1,14 @@
+{
+  "checkpoint": "models/Koto/checkpoints/koto_1.1.0/best_model.pt",
+  "step": 12000,
+  "parameters": 6163712,
+  "files": {
+    "f32": {
+      "status": "ok",
+      "path": "models/Koto/releases/exported/1.1.0/Hibari-Koto-F32.gguf",
+      "bytes": 24804544,
+      "mib": 23.66,
+      "sha256": "88a29eed6c6fe96344f85b6960d63c71b49d9febf9184e85bb400cb14c4015f3"
+    }
+  }
+}

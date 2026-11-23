@@ -1,0 +1,46 @@
+{
+  "checkpoint": "checkpoints/koto_1.1.0/best_model.pt",
+  "step": 12000,
+  "parameters": 6163712,
+  "created": "2026-11-22 09:07:03",
+  "model": "koto",
+  "model_version": "1.1.1",
+  "weights_version": "1.1.0",
+  "profile": "configs/release/koto_1.1.1.yaml",
+  "checkpoint_sha256": "df8acd089e0e071e6abb74f8825e8c39e7b9d496d9862afb55b083e7bf0808bb",
+  "tokenizer_sha256": "d5a2924e80b2afbb371f1309a2fd825b0a2aa3e8638d4735f0f5c789581e8587",
+  "files": {
+    "f32": {
+      "action": "unchanged",
+      "status": "ok",
+      "file": "Hibari-Koto-1.1.1-F32.gguf",
+      "bytes": 24805024,
+      "mib": 23.66,
+      "sha256": "485c0fda5e31d2093fb689e4ca70ddda4a7bd20e52608a7a49b9b1ef5fbe88c4"
+    },
+    "f16": {
+      "action": "unchanged",
+      "status": "ok",
+      "file": "Hibari-Koto-1.1.1-F16.gguf",
+      "bytes": 12484256,
+      "mib": 11.91,
+      "sha256": "f8094cc72e7029ddc8892d60ab493c05e460ff374542a5dd6f03c5514e5ed39b"
+    },
+    "q8_0": {
+      "action": "created",
+      "status": "ok",
+      "file": "Hibari-Koto-1.1.1-Q8_0.gguf",
+      "bytes": 6708928,
+      "mib": 6.4,
+      "sha256": "865295367e94215e4389539d929d73161d394bf0538ad0e93446920221da36d2"
+    },
+    "q4_k_m": {
+      "action": "created",
+      "status": "ok",
+      "file": "Hibari-Koto-1.1.1-Q4_K_M.gguf",
+      "bytes": 4034240,
+      "mib": 3.85,
+      "sha256": "ed33586e80920c1e07baddb7d4f0441571b71ada2a4b144d378b5eddce382163"
+    }
+  }
+}

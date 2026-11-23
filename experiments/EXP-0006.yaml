@@ -1,0 +1,72 @@
+id: EXP-0006
+model: koto
+model_version: 1.3.0
+date: 2026-11-22
+objective: >-
+  A conversation-first Koto at 4.8x the size (29,368,832 parameters, owner's decision on
+  2026-11-22): more natural multi-turn dialogue, conversational skills
+  from the 1.3.0 brief (disagreement, repair, topic change, follow-ups, reasons),
+  without losing the 1.1.x rewriting ability. Engine 0.4.0 (GPT-2-informed engineering).
+problem: >-
+  The 1.2.x mixes were ~40% writing tasks and ~16.5% single-turn generic-assistant data;
+  natural multi-turn conversation was ~30% (outputs/data/mix_1.2.1_train.md). 1.2.0 lost
+  rewriting quality to behaviour data and over-learned fixed replies (EXP-0004).
+source_changes:
+  - repo: hibari
+    files: [src/hibari/inference/generation.py (batched / streaming), src/hibari/data/bpe_reference.py, src/hibari/data/pipeline.py,
+            src/hibari/evaluation/evaluator.py, src/hibari/training/trainer.py (resume), src/hibari/model/config.py (validation),
+            src/hibari/inference/intent.py, src/hibari/inference/reranking.py, src/hibari/inference/tasks.py, pyproject.toml]
+  - repo: koto
+    files: [koto/data/behaviour.py (behaviour_version 3), scripts/build_mix.py, scripts/dataset_report.py,
+            koto/evaluation/conversation_suite.py, evaluation/evaluate_behaviour.py, training/train.py (--resume)]
+datasets: [configs/data/koto_1.3.0.yaml]
+configs: [configs/model/koto_1.3.0_large.yaml, configs/training/koto_1.3.0_large.yaml, configs/release/koto_1.3.0.yaml,
+          configs/model/koto.yaml, configs/training/koto_1.3.0.yaml, configs/training/koto_1.3.0_ft.yaml]   # last three: 6.16M baselines
+checkpoint: checkpoints/koto_1.3.0_large/best_model.pt   # sha256 e705757623a5234af381823b69bbcb866476a24391b757f3fabc895cd122e5be
+training:
+  status: COMPLETED          # run by the owner, finished 2026-11-23
+  authorized_by: owner
+  config: configs/training/koto_1.3.0_large.yaml
+  estimate: "~11-13 h on the owner's CPU (measured 2.60 s/step vs 0.70 s/step for 6.16M on random tokens; 6.16M real runs ran ~1.03 s/step)"
+  run:   # from checkpoints/koto_1.3.0_large/training_history.json
+    device: CUDA (torch 2.12.1+cu126), owner's Windows machine; 6,200 s (~1.7 h)
+    steps: 12000
+    stop_reason: max_steps
+    best: {step: 12000, eval_loss: 2.8747, eval_perplexity: 17.72}
+    eval_loss_by_1k_steps: [4.171, 3.575, 3.391, 3.245, 3.138, 3.065, 3.017, 2.944, 2.893, 2.900, 2.887, 2.875]
+    final_train_loss: 1.592
+    engine_git_commit: 91db4a2cd7ed1dcc0880273e512363e433a9e18b
+    koto_git_commit: e87296702489f5f06e36fb996bace518ed9460ca
+    data_cache_dir_recorded: data\processed
+    train_examples_recorded: 99640
+    val_examples_recorded: 3233
+    train_file_sha256_recorded: b53cf87c600e078875091a77f0c9e1394fa7b077263242791d5cdc83fe736677
+evaluation:
+  methodology:
+    - evaluation/evaluate_behaviour.py --suite behaviour (independent, 52 cases) and --suite conversation (the brief's prompts), seeds 0 1 2
+    - compare with koto_1.1.1_* and koto_1.2.0_* reports of the same suites
+    - evaluation/evaluate_upgrade.py for rewriting / grammar regressions vs 1.1.0
+  reports: [outputs/data/mix_1.2.1_train.md, outputs/data/mix_1.3.0_train.md, outputs/evaluation/koto_1.3.0_behaviour.md, outputs/evaluation/koto_1.3.0_conversation.md]
+results:
+  data: {train: 93509, val: 3748, test: 911, natural_multi_turn_share: 0.429, task_share: 0.302, generic_single_turn_share: 0.076,
+         eval_prompts_in_train: 0, general_quality_rejections: 204, generic_assistant_examples_capped: 15562}
+  evaluation:   # release pipeline, seeds 0 1 2, run 2026-11-23
+    behaviour: {pass_rate: [0.538, 0.558, 0.577], mean: 0.558, reformulation: 0.333, context: [0.4, 0.2, 0.2], identity: [0.333, 0.667, 0.667], safety: 1.0}
+    behaviour_1.1.1: {mean: 0.660, reformulation: 0.667}
+    conversation: {pass_rate: [0.533, 0.600, 0.533], mean: 0.555}
+    conversation_1.1.1: {mean: 0.644}
+    acceptance: FAILED (behaviour 0.558 <= 0.660; reformulation 0.333 < 0.67)
+failures:
+  - 'data provenance UNCONFIRMED: the checkpoint records data_cache_dir data\processed with 99,640 train / 3,233 val examples (train sha256 b53cf87c…), not data/processed_1.3.0 (93,509 / 3,748, sha256 2226d67d…); no local data directory matches. Owner to confirm which data was used.'
+  - recorded run_metadata.koto_version is 1.1.1 (stale field)
+improvements: [safety 1.0 on all seeds (1.1.1 0.833-1.0); identity 0.667 on two seeds (1.1.1 0.333); writing 0.5 (1.1.1 0.25)]
+limitations: [eval loss flat after step 9k (2.893 -> 2.875) while train loss fell 1.93 -> 1.59 (gap ~1.3 nats after ~3.9 epochs), a sign of over-fitting; eval perplexity 17.72 is on the run's own val set and not comparable with earlier versions; bigger model but the same 93.5k-example data, so over-fitting is possible (early stopping is on); reformulation may drop with fewer task examples; ~3.7x slower inference than 6.16M]
+follow_up: EXP-0007   # 1.3.1: same data as designed (fingerprint enforced by train.py), resid_dropout 0.1
+conclusion: >-
+  Trained 2026-11-23 and evaluated: NOT ACCEPTED. Root cause of the data problem: train.py accepted any
+  data directory (fixed in 1.3.1). The run's own data cannot be identified from this machine. Behaviour mean 0.558 vs 1.1.1's 0.660, reformulation
+  0.333 vs >= 0.67, conversation suite 0.555 vs 0.644. Disagreement / repair / memory replies are still incoherent.
+  The training data does not match the prepared 1.3.0 mix; until the owner confirms it,
+  results cannot be attributed to the conversation-first data. Accept 1.3.0 only if the independent behaviour suite beats 1.1.1's 0.660 and
+  reformulation stays >= 0.67 on the same seeds. The optional 6.16M baseline
+  (configs/training/koto_1.3.0.yaml) separates the effect of the data from the effect of size.

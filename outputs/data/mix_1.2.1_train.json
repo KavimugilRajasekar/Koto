@@ -1,0 +1,422 @@
+{
+  "data_dir": "data/processed_1.2.1",
+  "split": "train",
+  "conversations": 133300,
+  "sources": {
+    "behaviour": {
+      "conversations": 2227,
+      "mean_turn_pairs": 1.33,
+      "multi_turn_share": 0.178,
+      "mean_reply_words": 14.4,
+      "median_reply_words": 14.0,
+      "duplicate_share": 0.0,
+      "share_of_mix": 0.017,
+      "schema_problems": {},
+      "quality_rejections": {},
+      "quality_rejection_share": 0.0,
+      "emotional_user_turn_share": 0.451,
+      "emotions": {
+        "anxiety": 0.136,
+        "sadness": 0.076,
+        "grief": 0.058,
+        "disappointment": 0.051,
+        "frustration": 0.047,
+        "anger": 0.029,
+        "excitement": 0.027,
+        "confusion": 0.019,
+        "loneliness": 0.01
+      },
+      "rewrite_request_share": 0.0,
+      "question_share": 0.043,
+      "eval_prompt_overlap": 0
+    },
+    "blended_skill_talk": {
+      "conversations": 7250,
+      "mean_turn_pairs": 3.42,
+      "multi_turn_share": 0.894,
+      "mean_reply_words": 13.4,
+      "median_reply_words": 13.0,
+      "duplicate_share": 0.0,
+      "share_of_mix": 0.054,
+      "schema_problems": {},
+      "quality_rejections": {
+        "assistant_contains_url": 5,
+        "assistant_too_short": 2,
+        "assistant_mostly_non_letters": 10
+      },
+      "quality_rejection_share": 0.002,
+      "emotional_user_turn_share": 0.064,
+      "emotions": {
+        "anxiety": 0.018,
+        "happiness": 0.015,
+        "excitement": 0.011,
+        "sadness": 0.006,
+        "grief": 0.004,
+        "frustration": 0.004,
+        "anger": 0.003,
+        "disappointment": 0.002,
+        "loneliness": 0.001,
+        "confusion": 0.001
+      },
+      "rewrite_request_share": 0.0,
+      "question_share": 0.289,
+      "eval_prompt_overlap": 0
+    },
+    "coedit": {
+      "conversations": 27872,
+      "mean_turn_pairs": 1,
+      "multi_turn_share": 0.0,
+      "mean_reply_words": 17.0,
+      "median_reply_words": 15.0,
+      "duplicate_share": 0.123,
+      "share_of_mix": 0.209,
+      "schema_problems": {},
+      "quality_rejections": {
+        "assistant_mostly_non_letters": 5,
+        "assistant_too_short": 2,
+        "assistant_repeats_sentence": 2,
+        "assistant_contains_url": 2
+      },
+      "quality_rejection_share": 0.0,
+      "emotional_user_turn_share": 0.001,
+      "emotions": {
+        "grief": 0.001,
+        "frustration": 0.0,
+        "anxiety": 0.0
+      },
+      "rewrite_request_share": 0.983,
+      "question_share": 0.001,
+      "eval_prompt_overlap": 0
+    },
+    "conversation": {
+      "conversations": 2444,
+      "mean_turn_pairs": 1.64,
+      "multi_turn_share": 0.345,
+      "mean_reply_words": 20.4,
+      "median_reply_words": 18.0,
+      "duplicate_share": 0.75,
+      "share_of_mix": 0.018,
+      "schema_problems": {},
+      "quality_rejections": {},
+      "quality_rejection_share": 0.0,
+      "emotional_user_turn_share": 0.006,
+      "emotions": {
+        "anxiety": 0.003,
+        "excitement": 0.002,
+        "frustration": 0.001
+      },
+      "rewrite_request_share": 0.0,
+      "question_share": 0.522,
+      "eval_prompt_overlap": 0
+    },
+    "curated": {
+      "conversations": 3585,
+      "mean_turn_pairs": 1.95,
+      "multi_turn_share": 0.453,
+      "mean_reply_words": 14.3,
+      "median_reply_words": 13,
+      "duplicate_share": 0.698,
+      "share_of_mix": 0.027,
+      "schema_problems": {},
+      "quality_rejections": {
+        "assistant_mostly_non_letters": 6
+      },
+      "quality_rejection_share": 0.002,
+      "emotional_user_turn_share": 0.183,
+      "emotions": {
+        "sadness": 0.06,
+        "loneliness": 0.045,
+        "anxiety": 0.022,
+        "excitement": 0.018,
+        "anger": 0.016,
+        "frustration": 0.009,
+        "happiness": 0.006,
+        "confusion": 0.005
+      },
+      "rewrite_request_share": 0.001,
+      "question_share": 0.167,
+      "eval_prompt_overlap": 0
+    },
+    "dailydialog": {
+      "conversations": 7397,
+      "mean_turn_pairs": 3.08,
+      "multi_turn_share": 0.855,
+      "mean_reply_words": 11.4,
+      "median_reply_words": 9.0,
+      "duplicate_share": 0.0,
+      "share_of_mix": 0.055,
+      "schema_problems": {},
+      "quality_rejections": {
+        "assistant_mostly_non_letters": 55,
+        "assistant_repeats_sentence": 3,
+        "assistant_contains_url": 2
+      },
+      "quality_rejection_share": 0.008,
+      "emotional_user_turn_share": 0.035,
+      "emotions": {
+        "anxiety": 0.011,
+        "happiness": 0.008,
+        "excitement": 0.006,
+        "sadness": 0.003,
+        "confusion": 0.002,
+        "frustration": 0.002,
+        "anger": 0.002,
+        "grief": 0.001,
+        "disappointment": 0.001,
+        "loneliness": 0.0
+      },
+      "rewrite_request_share": 0.0,
+      "question_share": 0.453,
+      "eval_prompt_overlap": 0
+    },
+    "dialogue_skills": {
+      "conversations": 3320,
+      "mean_turn_pairs": 2.67,
+      "multi_turn_share": 0.842,
+      "mean_reply_words": 7.9,
+      "median_reply_words": 7.0,
+      "duplicate_share": 0.5,
+      "share_of_mix": 0.025,
+      "schema_problems": {},
+      "quality_rejections": {},
+      "quality_rejection_share": 0.0,
+      "emotional_user_turn_share": 0.001,
+      "emotions": {
+        "happiness": 0.001
+      },
+      "rewrite_request_share": 0.0,
+      "question_share": 0.464,
+      "eval_prompt_overlap": 0
+    },
+    "email": {
+      "conversations": 400,
+      "mean_turn_pairs": 1,
+      "multi_turn_share": 0.0,
+      "mean_reply_words": 40.9,
+      "median_reply_words": 41.0,
+      "duplicate_share": 0.47,
+      "share_of_mix": 0.003,
+      "schema_problems": {},
+      "quality_rejections": {},
+      "quality_rejection_share": 0.0,
+      "emotional_user_turn_share": 0.0,
+      "emotions": {},
+      "rewrite_request_share": 0.0,
+      "question_share": 0.0,
+      "eval_prompt_overlap": 0
+    },
+    "empathetic_dialogues": {
+      "conversations": 19639,
+      "mean_turn_pairs": 2.05,
+      "multi_turn_share": 0.99,
+      "mean_reply_words": 11.3,
+      "median_reply_words": 10.0,
+      "duplicate_share": 0.0,
+      "share_of_mix": 0.147,
+      "schema_problems": {},
+      "quality_rejections": {
+        "assistant_mostly_non_letters": 13,
+        "assistant_too_short": 13,
+        "assistant_contains_url": 26
+      },
+      "quality_rejection_share": 0.002,
+      "emotional_user_turn_share": 0.193,
+      "emotions": {
+        "anxiety": 0.043,
+        "happiness": 0.035,
+        "sadness": 0.034,
+        "excitement": 0.029,
+        "anger": 0.014,
+        "frustration": 0.013,
+        "grief": 0.013,
+        "disappointment": 0.006,
+        "loneliness": 0.005,
+        "confusion": 0.002
+      },
+      "rewrite_request_share": 0.0,
+      "question_share": 0.033,
+      "eval_prompt_overlap": 0
+    },
+    "everyday_conversations": {
+      "conversations": 6010,
+      "mean_turn_pairs": 2.7,
+      "multi_turn_share": 0.718,
+      "mean_reply_words": 21.6,
+      "median_reply_words": 23.0,
+      "duplicate_share": 0.5,
+      "share_of_mix": 0.045,
+      "schema_problems": {},
+      "quality_rejections": {
+        "assistant_mostly_non_letters": 2
+      },
+      "quality_rejection_share": 0.0,
+      "emotional_user_turn_share": 0.021,
+      "emotions": {
+        "anxiety": 0.016,
+        "excitement": 0.001,
+        "confusion": 0.001,
+        "frustration": 0.001,
+        "happiness": 0.001,
+        "sadness": 0.001,
+        "loneliness": 0.0
+      },
+      "rewrite_request_share": 0.0,
+      "question_share": 0.626,
+      "eval_prompt_overlap": 0
+    },
+    "handwritten": {
+      "conversations": 18576,
+      "mean_turn_pairs": 1,
+      "multi_turn_share": 0.0,
+      "mean_reply_words": 10.6,
+      "median_reply_words": 8.0,
+      "duplicate_share": 0.422,
+      "share_of_mix": 0.139,
+      "schema_problems": {},
+      "quality_rejections": {},
+      "quality_rejection_share": 0.0,
+      "emotional_user_turn_share": 0.0,
+      "emotions": {},
+      "rewrite_request_share": 0.989,
+      "question_share": 0.0,
+      "eval_prompt_overlap": 0
+    },
+    "oasst1": {
+      "conversations": 2993,
+      "mean_turn_pairs": 1,
+      "multi_turn_share": 0.0,
+      "mean_reply_words": 54.5,
+      "median_reply_words": 52,
+      "duplicate_share": 0.0,
+      "share_of_mix": 0.022,
+      "schema_problems": {},
+      "quality_rejections": {
+        "assistant_contains_url": 54,
+        "assistant_mostly_non_letters": 19,
+        "assistant_too_short": 5
+      },
+      "quality_rejection_share": 0.024,
+      "emotional_user_turn_share": 0.018,
+      "emotions": {
+        "confusion": 0.005,
+        "anxiety": 0.003,
+        "excitement": 0.002,
+        "happiness": 0.002,
+        "sadness": 0.002,
+        "loneliness": 0.001,
+        "grief": 0.001,
+        "frustration": 0.001,
+        "anger": 0.001,
+        "disappointment": 0.001
+      },
+      "rewrite_request_share": 0.001,
+      "question_share": 0.66,
+      "eval_prompt_overlap": 0
+    },
+    "paradetox": {
+      "conversations": 4067,
+      "mean_turn_pairs": 1,
+      "multi_turn_share": 0.0,
+      "mean_reply_words": 8.9,
+      "median_reply_words": 8,
+      "duplicate_share": 0.0,
+      "share_of_mix": 0.031,
+      "schema_problems": {},
+      "quality_rejections": {
+        "assistant_mostly_non_letters": 2
+      },
+      "quality_rejection_share": 0.0,
+      "emotional_user_turn_share": 0.0,
+      "emotions": {},
+      "rewrite_request_share": 1.0,
+      "question_share": 0.0,
+      "eval_prompt_overlap": 0
+    },
+    "prosocial_dialog": {
+      "conversations": 6000,
+      "mean_turn_pairs": 1,
+      "multi_turn_share": 0.0,
+      "mean_reply_words": 26.1,
+      "median_reply_words": 25.0,
+      "duplicate_share": 0.0,
+      "share_of_mix": 0.045,
+      "schema_problems": {},
+      "quality_rejections": {},
+      "quality_rejection_share": 0.0,
+      "emotional_user_turn_share": 0.115,
+      "emotions": {
+        "sadness": 0.026,
+        "frustration": 0.022,
+        "anger": 0.016,
+        "anxiety": 0.015,
+        "happiness": 0.01,
+        "excitement": 0.009,
+        "grief": 0.006,
+        "confusion": 0.005,
+        "disappointment": 0.003,
+        "loneliness": 0.003
+      },
+      "rewrite_request_share": 0.0,
+      "question_share": 0.135,
+      "eval_prompt_overlap": 0
+    },
+    "smol_rewrite": {
+      "conversations": 2434,
+      "mean_turn_pairs": 1,
+      "multi_turn_share": 0.0,
+      "mean_reply_words": 41.4,
+      "median_reply_words": 41.0,
+      "duplicate_share": 0.281,
+      "share_of_mix": 0.018,
+      "schema_problems": {},
+      "quality_rejections": {
+        "assistant_contains_url": 4
+      },
+      "quality_rejection_share": 0.002,
+      "emotional_user_turn_share": 0.004,
+      "emotions": {
+        "excitement": 0.002,
+        "sadness": 0.001,
+        "happiness": 0.0,
+        "frustration": 0.0,
+        "anxiety": 0.0
+      },
+      "rewrite_request_share": 0.986,
+      "question_share": 0.005,
+      "eval_prompt_overlap": 0
+    },
+    "smoltalk": {
+      "conversations": 19086,
+      "mean_turn_pairs": 1,
+      "multi_turn_share": 0.0,
+      "mean_reply_words": 58.0,
+      "median_reply_words": 60.0,
+      "duplicate_share": 0.0,
+      "share_of_mix": 0.143,
+      "schema_problems": {},
+      "quality_rejections": {
+        "assistant_mostly_non_letters": 87,
+        "assistant_too_short": 35,
+        "assistant_repeats_sentence": 6,
+        "assistant_contains_url": 11
+      },
+      "quality_rejection_share": 0.006,
+      "emotional_user_turn_share": 0.027,
+      "emotions": {
+        "anxiety": 0.009,
+        "excitement": 0.004,
+        "happiness": 0.004,
+        "sadness": 0.002,
+        "grief": 0.002,
+        "loneliness": 0.002,
+        "confusion": 0.002,
+        "disappointment": 0.002,
+        "anger": 0.001,
+        "frustration": 0.001
+      },
+      "rewrite_request_share": 0.001,
+      "question_share": 0.44,
+      "eval_prompt_overlap": 0
+    }
+  }
+}

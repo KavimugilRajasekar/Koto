@@ -1,0 +1,40 @@
+# Koto 1.1.1 — Ollama Modelfile (GENERATED; do not edit by hand)
+# Generated from koto_1.1.1.yaml by hibari.release.modelfile.
+# Weights: 1.1.0 (checkpoints/koto_1.1.0/best_model.pt); checkpoint sha256 df8acd089e0e071e6abb74f8825e8c39e7b9d496d9862afb55b083e7bf0808bb
+#
+# Usage (from this directory):
+#   ollama create hibari-koto:1.1.1 -f Modelfile
+#   ollama run hibari-koto:1.1.1
+#
+# Differences from the Python engine (hibari.inference.HibariChatSession):
+#   * no safety layer, no rewriting-task router, no informal-text normalisation,
+#     no candidate reranking - Ollama returns the raw model's reply;
+#   * repeat_penalty counts the last repeat_last_n tokens INCLUDING the prompt
+#     (Python counts only generated tokens).
+FROM ./Hibari-Koto-1.1.1-F32.gguf
+
+TEMPLATE """{{- if .System }}<|system|>
+{{ .System }}<|eos|>
+{{ end }}
+{{- range .Messages }}
+{{- if eq .Role "user" }}<|user|>
+{{ .Content }}<|eos|>
+{{ else if eq .Role "assistant" }}<|assistant|>
+{{ .Content }}<|eos|>
+{{ end }}
+{{- end }}<|assistant|>
+"""
+
+SYSTEM """You are Hibari Koto, a friendly and calm AI companion. Keep replies short, kind and honest."""
+
+PARAMETER stop "<|eos|>"
+PARAMETER stop "<|user|>"
+PARAMETER stop "<|system|>"
+PARAMETER stop "<|assistant|>"
+PARAMETER temperature 0.5
+PARAMETER top_k 25
+PARAMETER top_p 0.85
+PARAMETER repeat_penalty 1.15
+PARAMETER repeat_last_n 64
+PARAMETER num_ctx 256
+PARAMETER num_predict 80

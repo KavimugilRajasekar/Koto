@@ -1,12 +1,21 @@
-# Hibari Koto — Ollama Modelfile
-# Usage (from the directory containing the GGUF):
-#   ollama create hibari-koto -f Modelfile
-#   ollama run hibari-koto
-# Swap the FROM line for the F32 / F16 / Q8_0 variant if you prefer.
-FROM ./Hibari-Koto-F32.gguf
+# NOTE: this copy points at the versioned 1.1.1 release. The GGUF files directly in
+# releases/exported/ (Hibari-Koto-F32.gguf etc.) hold the 1.0.0 weights under a stale
+# 'koto_v4' label; see releases/exported/README.md.
+# Koto 1.1.1 — Ollama Modelfile (GENERATED; do not edit by hand)
+# Generated from koto_1.1.1.yaml by hibari.release.modelfile.
+# Weights: 1.1.0 (checkpoints/koto_1.1.0/best_model.pt); checkpoint sha256 df8acd089e0e071e6abb74f8825e8c39e7b9d496d9862afb55b083e7bf0808bb
+#
+# Usage (from this directory):
+#   ollama create hibari-koto:1.1.1 -f Modelfile
+#   ollama run hibari-koto:1.1.1
+#
+# Differences from the Python engine (hibari.inference.HibariChatSession):
+#   * no safety layer, no rewriting-task router, no informal-text normalisation,
+#     no candidate reranking - Ollama returns the raw model's reply;
+#   * repeat_penalty counts the last repeat_last_n tokens INCLUDING the prompt
+#     (Python counts only generated tokens).
+FROM ./1.1.1/Hibari-Koto-1.1.1-F32.gguf
 
-# Matches HibariTokenizer.apply_chat_template exactly:
-# <|system|>\n...<|eos|>\n<|user|>\n...<|eos|>\n<|assistant|>\n
 TEMPLATE """{{- if .System }}<|system|>
 {{ .System }}<|eos|>
 {{ end }}
@@ -29,5 +38,6 @@ PARAMETER temperature 0.5
 PARAMETER top_k 25
 PARAMETER top_p 0.85
 PARAMETER repeat_penalty 1.15
+PARAMETER repeat_last_n 64
 PARAMETER num_ctx 256
-PARAMETER num_predict 96
+PARAMETER num_predict 80

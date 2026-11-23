@@ -5,19 +5,19 @@ Linux (CPU), which serves the model through its bundled llama.cpp runner.
 
 > GGUF files made by the original (pre-v2) exporter must not be used: the F16
 > file crashes llama.cpp-based runtimes and both files tokenize text
-> differently from training. Re-export with `hibari/scripts/export.py`.
+> differently from training. Re-export with `../../scripts/engine/export.py`.
 
 ## Install and run
 
 The Modelfile must sit next to the GGUF it names in `FROM`.
 
 ```bash
-cd hibari/models/exported           # holds the exported GGUFs + a Modelfile (FROM ./Hibari-Koto-F32.gguf)
+cd releases/exported           # holds the exported GGUFs + a Modelfile (FROM ./Hibari-Koto-F32.gguf)
 ollama create hibari-koto:6m-v4-f32 -f Modelfile
 ollama run hibari-koto:6m-v4-f32
 ```
 
-`release/Modelfile` is the template: copy it next to a GGUF and edit its
+`releases/Modelfile` is the template: copy it next to a GGUF and edit its
 `FROM` line to the F32, F16, Q8_0 or Q4_K_M file. If `ollama run` says
 `could not connect to ollama server`, start it with `ollama serve`.
 
@@ -92,7 +92,7 @@ PARAMETER num_predict 96
 
 ## What Ollama does NOT include
 
-The Python chat session (`hibari/scripts/generate.py`) adds a deterministic
+The Python chat session (`../../scripts/engine/generate.py`) adds a deterministic
 safety layer for self-harm, violent intent and harmful-instruction requests.
 **That layer does not exist in Ollama / llama.cpp.** There, only the
 behaviour learned from the curated training examples applies, which is

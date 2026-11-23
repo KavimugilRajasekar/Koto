@@ -1,0 +1,38 @@
+# Koto 1.2.1 — DRAFT release profile. training_status NOT_STARTED: the checkpoint
+# does not exist yet, so validation fails until the owner's run is done. After training:
+#   1. set checkpoint_sha256 (sha256sum checkpoints/koto_1.2.1/best_model.pt) and training_status: COMPLETED
+#   2. python ../../scripts/engine/validate_release.py --profile configs/release/koto_1.2.1.yaml --no-gguf
+#   3. python evaluation/evaluate_behaviour.py --profile configs/release/koto_1.2.1.yaml --name koto_1.2.1_behaviour --seeds 0 1 2
+#   4. python ../../scripts/engine/export.py --profile configs/release/koto_1.2.1.yaml --llama-quantize <bin> --record
+model: koto
+version: 1.2.1
+weights_version: 1.2.1
+training_status: NOT_STARTED
+experiment: EXP-0005
+
+identity:
+  name: Koto
+  architecture: Hibari
+  creator: Kavimugil Rajasekar
+  description: Koto, a conversational AI built on the Hibari architecture.
+  terms: [koto, hibari, kavimugil, rajasekar]
+
+system_prompt: >-
+  You are Koto, a friendly and calm conversational AI built on the Hibari architecture. Keep replies short, kind and honest.
+training_system_prompt: >-
+  You are Koto, a friendly and calm conversational AI built on the Hibari architecture. Keep replies short, kind and honest.
+
+model_config: configs/model/koto.yaml
+inference_config: configs/inference/koto.yaml
+checkpoint: checkpoints/koto_1.2.1/best_model.pt
+checkpoint_sha256: null
+tokenizer_dir: tokenizer
+tokenizer_sha256: d5a2924e80b2afbb371f1309a2fd825b0a2aa3e8638d4735f0f5c789581e8587
+
+gguf:
+  dir: releases/exported/1.2.1
+  files:
+    f32: {file: Hibari-Koto-1.2.1-F32.gguf}
+    f16: {file: Hibari-Koto-1.2.1-F16.gguf}
+    q8_0: {file: Hibari-Koto-1.2.1-Q8_0.gguf}
+    q4_k_m: {file: Hibari-Koto-1.2.1-Q4_K_M.gguf}

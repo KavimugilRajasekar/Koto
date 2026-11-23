@@ -1,0 +1,39 @@
+# Koto 1.3.0 — DRAFT release profile (NOT RELEASED). Trained by the owner 2026-11-23 (EXP-0006);
+# data provenance UNCONFIRMED: the checkpoint records data_cache_dir data\processed with 99,640 train / 3,233 val examples (train sha256 b53cf87c…), not data/processed_1.3.0 (93,509 / 3,748, sha256 2226d67d…).
+# Remaining steps:
+#   1. done: checkpoint_sha256 and training_status: COMPLETED
+#   2. python ../../scripts/engine/validate_release.py --profile configs/release/koto_1.3.0.yaml --no-gguf
+#   3. python evaluation/evaluate_behaviour.py --profile configs/release/koto_1.3.0.yaml --name koto_1.3.0_behaviour --seeds 0 1 2
+#   4. python ../../scripts/engine/export.py --profile configs/release/koto_1.3.0.yaml --llama-quantize <bin> --record
+model: koto
+version: 1.3.0
+weights_version: 1.3.0
+training_status: COMPLETED
+experiment: EXP-0006
+
+identity:
+  name: Koto
+  architecture: Hibari
+  creator: Kavimugil Rajasekar
+  description: Koto, a conversational AI built on the Hibari architecture.
+  terms: [koto, hibari, kavimugil, rajasekar]
+
+system_prompt: >-
+  You are Koto, a friendly and calm conversational AI built on the Hibari architecture. Keep replies short, kind and honest.
+training_system_prompt: >-
+  You are Koto, a friendly and calm conversational AI built on the Hibari architecture. Keep replies short, kind and honest.
+
+model_config: configs/model/koto_1.3.0_large.yaml
+inference_config: configs/inference/koto.yaml
+checkpoint: checkpoints/koto_1.3.0_large/best_model.pt
+checkpoint_sha256: e705757623a5234af381823b69bbcb866476a24391b757f3fabc895cd122e5be
+tokenizer_dir: tokenizer
+tokenizer_sha256: d5a2924e80b2afbb371f1309a2fd825b0a2aa3e8638d4735f0f5c789581e8587
+
+gguf:
+  dir: releases/exported/1.3.0
+  files:
+    f32: {file: Hibari-Koto-1.3.0-F32.gguf, sha256: cfa44b8c7d388ad006e2ebd629367801303a843b844fc4bf4977e7fd81d283c8}
+    f16: {file: Hibari-Koto-1.3.0-F16.gguf, sha256: dcbaaa49bc190aef75374632e0a77a30a3aa1d9ca16f1a632cb2ec68681091af}
+    q8_0: {file: Hibari-Koto-1.3.0-Q8_0.gguf, sha256: 8e93b823efe767c21eaaf221a947e3d6f7a07760c2dd6b40814ddb576a17a3ed}
+    q4_k_m: {file: Hibari-Koto-1.3.0-Q4_K_M.gguf, sha256: b9d0e88d92676ff9e91c76e31ed5264ef36bf4ac614ba0d0a508ab6eed2512c2}

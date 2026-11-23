@@ -1,0 +1,46 @@
+id: EXP-0004
+model: koto
+model_version: 1.2.0
+date: 2026-11-22
+objective: >-
+  Teach the behaviours that decoding-time reranking cannot recover (EXP-0003):
+  empathy, grief / sympathy, de-escalation of insults, informal questions, the
+  "Koto, built on Hibari" identity, interview-style context chains, complete e-mails.
+problem: >-
+  On 1.1.0 weights, for several prompts none of 16 sampled candidates is acceptable
+  (e.g. "You're so pathetic!" -> "I don't have an appointment yet.";
+  "What will the weather be like in Madurai next Tuesday?" -> invented forecast).
+source_changes:
+  - repo: koto
+    files: [koto/data/behaviour.py, scripts/build_mix.py, training/train.py]
+datasets: [configs/data/koto_1.2.0.yaml]
+configs: [configs/model/koto.yaml, configs/model/koto_1.2.0_large.yaml, configs/training/koto_1.2.0.yaml, configs/release/koto_1.2.0.yaml]
+checkpoint: {path: checkpoints/koto_1.2.0/best_model.pt, step: 14000, sha256: c8cfedf5301c9d932ba741502779d9a11762f3d353366c4ebb49737fdb6e8762, eval_loss: 2.739}
+training:
+  status: COMPLETED          # run by the owner on 2026-11-22, 14,000 steps, 3 h 59 min on CPU
+  authorized_by: Kavimugil Rajasekar
+  config: configs/training/koto_1.2.0.yaml
+evaluation:
+  methodology:
+    - evaluation/evaluate_behaviour.py --profile configs/release/koto_1.2.0.yaml --seeds 0 1 2 (compare with outputs/evaluation/koto_1.1.1_behaviour.md)
+    - evaluation/evaluate_upgrade.py (regression on writing tasks vs 1.1.0)
+    - scripts/engine/compare_backends.py after export
+  reports: [outputs/evaluation/koto_1.2.0_behaviour.md, outputs/evaluation/backend_parity_1.2.0.json, docs/32_KOTO_1.2.0_EVALUATION.md]
+results:
+  training: {steps: 14000, best_eval_loss: 2.739, eval_perplexity: 15.48, note: 1.2.0 validation split; not comparable with 1.1.0}
+  behaviour_pass_rate_mean_3_seeds: {release_1_1_1: 0.660, release_1_2_0: 0.648, baseline_1_1_1: 0.590, baseline_1_2_0: 0.506, raw_1_1_1: 0.481, raw_1_2_0: 0.500}
+  categories_release_1_1_1_vs_1_2_0: {basic: [0.83, 0.78], empathy: [0.70, 0.74], context: [0.40, 0.47], reformulation: [0.67, 0.44], writing: [0.25, 0.50], robustness: [0.77, 0.80], safety: [0.89, 0.83], identity: [0.33, 0.33]}
+  ollama_f32_raw_pass_rate: {"1.1.1": 0.538, "1.2.0": 0.519}
+  backend_parity: {tokenizer: 23/23 all variants, llama_cpp_greedy: 11/11 all variants}
+failures:
+  - "Rewriting regressed: 'fix the grammar: me and him goes to school together' -> 'I have been going to school together.'; 'Make this formal: hey, can u send me the file today' -> 'Heads up the file today.'"
+  - "Insult replies leak into ordinary turns: 'see you later!' -> 'Sorry I haven't been helpful. Tell me what went wrong...'"
+  - "Third-party template reused for the user's own day: 'I had a really tough day at work today.' -> 'That sounds hard, for them and for you.'"
+  - "'say my name?' (never given) -> Koto's own name; 'what architecture do you run on?' -> 'I run on the road.'"
+improvements:
+  - identity "I'm Koto, a conversational AI built on the Hibari architecture" learned
+  - writing 0.25 -> 0.50; situation-only sadness ("Nobody came to my birthday party") 0/3 -> 2/3; calm replies to insults in raw Ollama
+limitations: [template over-learning from 3x repeats of few fixed replies; 6.2M capacity shared with rewriting]
+conclusion: >-
+  Not released: overall no better than 1.1.1 (0.648 vs 0.660) with a clear rewriting
+  regression. 1.1.1 stays current. Fixes prepared as EXP-0005 (1.2.1).

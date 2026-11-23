@@ -1,0 +1,28 @@
+# Reconstructed record (written 2026-11-22 from checkpoint metadata and reports).
+id: EXP-0001
+model: koto
+model_version: 1.0.0
+date: 2026-11-20
+objective: First full Koto conversational model ("Start" checkpoint).
+problem: No working conversational model existed.
+source_changes:
+  - repo: hibari
+    files: [engine at commit 3161095]
+datasets: [data/processed]
+configs: [configs/model/koto.yaml, configs/training/koto.yaml]
+checkpoint: {path: checkpoints/koto_start/best_model.pt, step: 11000, sha256: e64798459132dbe27934b62f4e6ba2ad7218a93a9662694bc12843d38ad752e5}
+training:
+  status: COMPLETED
+  authorized_by: Kavimugil Rajasekar
+  config: configs/training/koto.yaml
+evaluation:
+  methodology: [upgrade suite (54 cases, routed/unrouted), legacy suite (58 cases)]
+  reports: [outputs/evaluation/koto_1.0.0_rerun.md]
+results: {upgrade_suite_pass_rate_routed_greedy: 0.167, val_perplexity_open_conversation: 20.86}
+failures: [no context retention, invented answers, rewriting unusable]
+improvements: []
+limitations: [6.2M parameters, 256-token context]
+conclusion: >-
+  Baseline. NOTE: releases/exported/*.gguf (labelled "koto_v4", general.name
+  Hibari-Koto-Plus, version 2.0) contain exactly these weights; this was found
+  in EXP-0003.

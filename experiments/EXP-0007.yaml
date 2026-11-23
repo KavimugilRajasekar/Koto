@@ -1,0 +1,61 @@
+id: EXP-0007
+model: koto
+model_version: 1.3.1
+date: 2026-11-23
+objective: >-
+  Run the 1.3.0 experiment as it was designed: the 29.4M model on the conversation-first mix
+  (data/processed_1.3.0), which EXP-0006 did not use, with residual dropout against the
+  over-fitting EXP-0006 showed.
+problem: >-
+  EXP-0006 (1.3.0) trained on a different dataset than its config named (99,640 / 3,233 sequences,
+  train sha256 b53cf87c…, vs 93,509 / 3,748 conversations, sha256 2226d67d…) and failed acceptance
+  (behaviour 0.558 vs 0.660, reformulation 0.333 vs 0.67). Its eval loss was flat after 9k steps
+  while train loss kept falling (1.59 vs 2.87). Its result therefore says nothing about the 1.3.0 mix.
+source_changes:
+  - repo: hibari
+    files: [src/hibari/model/config.py (resid_dropout), src/hibari/model/transformer.py, src/hibari/model/llm.py,
+            src/hibari/release/validation.py (configs saved before a new field), scripts/engine/compare_backends.py (llama.cpp length)]
+  - repo: koto
+    files: [training/train.py (data_fingerprint, --data-cache-dir guard, conversation counts), koto/__init__.py (1.3.1),
+            koto/evaluation/behaviour_suite.py (no_human_claim false negative)]
+datasets: [configs/data/koto_1.3.0.yaml]
+configs: [configs/model/koto_1.3.1_large.yaml, configs/training/koto_1.3.1_large.yaml, configs/release/koto_1.3.1.yaml]
+checkpoint: checkpoints/koto_1.3.1_large/best_model.pt   # sha256 468ac0e16cf55f56f4b1e9d897a241b7725f2e3e4654bb3b33b4d6ff5897633e, step 11500
+training:
+  status: COMPLETED          # run by the owner on a CUDA machine, 2026-11-23
+  authorized_by: owner
+  run: {steps: 12000, hours: 1.72, best_step: 11500, best_eval_loss: 2.781, best_eval_perplexity: 16.14, final_train_loss: 1.455,
+        data_fingerprint_checked: true, koto_commit: e0f1232, engine_commit: d283626}
+  config: configs/training/koto_1.3.1_large.yaml
+  estimate: "~1.7 h on the owner's CUDA machine (EXP-0006 took 6,200 s for 12,000 steps); ~11-13 h on CPU"
+evaluation:
+  methodology:
+    - evaluation/evaluate_behaviour.py --suite behaviour and --suite conversation, seeds 0 1 2, release pipeline
+    - compare with koto_1.1.1_behaviour_r4 / koto_1.1.1_conversation and koto_1.3.0_* (same suites and seeds)
+    - note: no_human_claim is stricter from 2026-11-23; re-score 1.1.1 with the same suite version before comparing that column
+  reports: [outputs/evaluation/koto_1.3.1_behaviour.md, outputs/evaluation/koto_1.3.1_conversation.md,
+            outputs/evaluation/koto_1.1.1_behaviour_review_2026-11-23.md, outputs/evaluation/koto_1.1.1_conversation_engine041.md,
+            outputs/evaluation/backend_parity_1.3.1.json, docs/34_KOTO_1.3.1_RELEASE_REPORT.md]
+results:
+  behaviour_suite_mean: {koto_1.3.1: 0.628, koto_1.1.1: 0.660, koto_1.3.0: 0.558}
+  behaviour_suite_seeds_1.3.1: [0.615, 0.654, 0.615]
+  conversation_suite_mean: {koto_1.3.1: 0.733, koto_1.1.1: 0.645, koto_1.3.0: 0.555}
+  behaviour_by_category_1.1.1_to_1.3.1: {basic: [0.833, 0.833], empathy: [0.704, 0.593], context: [0.4, 0.533], reformulation: [0.667, 0.333],
+                                         writing: [0.25, 0.167], robustness: [0.767, 0.9], safety: [0.889, 1.0], identity: [0.333, 0.333]}
+  backend_parity: {f32: 11/11, f16: 11/11, q8_0: 11/11, q4_k_m: 9/11}
+failures:
+  - acceptance rule not met: behaviour 0.628 (needed > 0.660), reformulation 0.333 (needed >= 0.67)
+  - rewriting and e-mail writing regressed vs 1.1.1 (reformulation 0.667 -> 0.333, writing 0.25 -> 0.167)
+improvements:
+  - conversation suite 0.645 -> 0.733; context 0.40 -> 0.53, robustness 0.77 -> 0.90, safety 0.89 -> 1.00
+  - clearly better than 1.3.0 on both suites (0.558 / 0.555)
+  - eval loss kept improving to step 11,500 (1.3.0 was flat after 9k)
+limitations:
+  - two changes at once (correct data + resid_dropout); if 1.3.1 is accepted, a run with resid_dropout 0.0 would separate their effects
+  - the suite failures of 1.3.0 were read before preparing this run; no data or decoding was tuned on them (the data mix is unchanged)
+conclusion: >-
+  RELEASED 2026-11-23 by the owner's decision as Hibari-Koto1.3.1:29M although the acceptance rule was not met
+  (behaviour 0.628 < 0.660, reformulation 0.333 < 0.67), for its conversation gains (0.733 vs 0.645); the
+  regression is stated in every published card. Original rule: Accept 1.3.1 only if the behaviour suite mean beats 1.1.1's 0.660 and reformulation stays >= 0.67
+  on seeds 0 1 2. If reformulation alone fails, the next step is a data change (rewriting share back towards
+  1.2.x's ~40%), decided by the owner.

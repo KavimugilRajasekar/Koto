@@ -1,0 +1,27 @@
+# Koto 1.2.0 — FULL training run from scratch (random init). PREPARED, NOT RUN.
+# Requires the data:  HF_HUB_OFFLINE=1 python scripts/build_mix.py --config configs/data/koto_1.2.0.yaml
+# Train (manually):   python training/train.py --train-config configs/training/koto_1.2.0.yaml
+# Same 6.2M architecture and recipe as 1.1.0, so the effect of the data is measurable.
+# For more capacity use --model-config configs/model/koto_1.2.0_large.yaml (see that file).
+# The trainer refuses to overwrite an existing best_model.pt in output_dir.
+experiment: koto-1.2.0
+model_version: 1.2.0      # recorded in the checkpoint; must equal weights_version in configs/release/koto_1.2.0.yaml
+data_cache_dir: data/processed_1.2.0
+learning_rate: 1.0e-3
+min_lr_ratio: 0.1
+weight_decay: 0.1
+warmup_steps: 500
+max_steps: 14000          # ~118k examples at batch 32 ≈ 3.8 epochs
+batch_size: 32
+gradient_accumulation_steps: 1
+gradient_clip: 1.0
+checkpoint_every: 1000
+eval_every: 1000
+log_every: 100
+val_examples: 5000
+output_dir: checkpoints/koto_1.2.0
+save_best: true
+overwrite_output_dir: false
+early_stopping_patience: 4
+max_hours: 8.0
+seed: 42

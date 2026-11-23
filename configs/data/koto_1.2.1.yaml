@@ -1,0 +1,40 @@
+# Koto 1.2.1 — data mix (PREPARED; built by scripts/build_mix.py, no downloads).
+# Same sources as 1.1.0 plus koto.data.behaviour (empathy, grief / sympathy /
+# good news, hostile messages, informal chat, context chains, complete e-mails)
+# and the identity change to "Koto, a conversational AI built on the Hibari
+# architecture" (system prompt + hand-written assistant turns).
+#   HF_HUB_OFFLINE=1 python scripts/build_mix.py --config configs/data/koto_1.2.0.yaml
+experiment: koto-1.2.1
+general_src: data/processed
+out_dir: data/processed_1.2.1
+tokenizer_dir: tokenizer
+max_seq_len: 256
+
+# identity v2: every example (general corpus included) uses this system prompt;
+# must equal system_prompt in configs/release/koto_1.2.0.yaml
+system_prompt: >-
+  You are Koto, a friendly and calm conversational AI built on the Hibari architecture. Keep replies short, kind and honest.
+identity: v2
+
+general_train: all
+curated_repeats: 3
+conversation_repeats: 4
+conversation_variants: 3
+emails: 400
+dialogue_skills_repeats: 2
+recall_conversations: 1500
+behaviour_repeats: 1                 # 1.2.0 used 3: the fixed replies were over-learned (docs/32)
+behaviour_version: 2                 # adds social, user-fact and mood families; ~8x more insult-reply variety
+
+tasks:
+  coedit: {gec: 9000, paraphrase: 4000, simplification: 2500, clarity: 1252}
+  paradetox: 5000
+  smol_rewrite: 2500
+  polite_templated: 600
+  handwritten_repeats: 3              # 1.2.0 regressed on formal / casual / grammar rewrites
+  task_repeats: {casual: 4, shorten: 4, formal: 4, correct_grammar: 2, rephrase: 2}
+
+canonical_share: 0.5
+val_pct: 4
+test_pct: 4
+seed: 121

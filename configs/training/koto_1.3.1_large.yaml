@@ -1,0 +1,36 @@
+# Koto 1.3.1 — retrain of the LARGE model (29.4M parameters) on the data 1.3.0 was meant to use.
+# PREPARED, NOT RUN (EXP-0007). The owner runs it:
+#   python training/train.py --train-config configs/training/koto_1.3.1_large.yaml
+#   (resume after an interruption: the same command with --resume)
+# Do NOT pass --data-cache-dir: a directory different from data_cache_dir below is refused, and the
+# run stops unless the data matches data_fingerprint exactly (the 1.3.0 run used other data, EXP-0006).
+# data/ is not in git: on another machine download it (byte-identical, the fingerprint matches):
+#   hf download kavimugil-r/koto-data --repo-type dataset --include "processed_1.3.0/*" --local-dir data
+# (private dataset, owner login needed) or copy it. Rebuilding it there will not match the fingerprint.
+# Changes vs koto_1.3.0_large.yaml: resid_dropout 0.1 (model config), eval every 500 steps, fingerprint.
+experiment: koto-1.3.1
+model_version: 1.3.1
+model_config: configs/model/koto_1.3.1_large.yaml
+data_cache_dir: data/processed_1.3.0
+data_fingerprint:            # measured 2026-11-23 on data/processed_1.3.0 (configs/data/koto_1.3.0.yaml)
+  train_conversations: 93509
+  val_conversations: 3748
+  train_sha256: 2226d67d811663899872a5b0091c8780f5468f38d8d49508e02e9b18e6ef124a
+learning_rate: 6.0e-4
+min_lr_ratio: 0.1
+weight_decay: 0.1
+warmup_steps: 1000
+max_steps: 12000             # ~4.1 epochs; best_model.pt keeps the lowest eval loss
+batch_size: 32
+gradient_accumulation_steps: 1
+gradient_clip: 1.0
+checkpoint_every: 500
+eval_every: 500              # 1.3.0: 1000; finer choice of the best step
+log_every: 100
+val_examples: 5000
+output_dir: checkpoints/koto_1.3.1_large
+save_best: true
+overwrite_output_dir: false
+early_stopping_patience: 6   # 6 evals = 3,000 steps without improvement
+max_hours: 30.0
+seed: 42

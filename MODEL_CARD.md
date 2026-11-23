@@ -1,5 +1,12 @@
 # 17 — Model Card: Hibari Koto
 
+> **Current release: Koto 1.3.1 — `Hibari-Koto1.3.1:29M`** (29,368,832 parameters: 8 blocks, d_model 512,
+> 8 heads × 64, SwiGLU 1536; trained 2026-11-23 on a CUDA GPU in 1.72 h). Behaviour suite 0.628 (1.1.1: 0.660),
+> conversation suite 0.733 (1.1.1: 0.645); weaker at rewriting (0.33 vs 0.67). Full report:
+> `docs/34_KOTO_1.3.1_RELEASE_REPORT.md`. Download: [Hugging Face](https://huggingface.co/kavimugil-r/Hibari-Koto) ·
+> [Ollama](https://ollama.com/kavimugil-r/Hibari-Koto1.3.1) (`ollama run kavimugil-r/Hibari-Koto1.3.1:29M`).
+> The table below describes the 6.16M 1.x architecture; 1.3.x differs only in size.
+
 ## Model details
 
 | Field | Value |
@@ -13,7 +20,7 @@
 | **Vocabulary** | 4,096 byte-level BPE tokens |
 | **Weight tying** | input embedding = output head |
 | **Training** | from scratch in PyTorch on CPU; loss on assistant tokens only |
-| **Author** | Kavimugil Rajasekar |
+| **Author** | Kavimugil Rajasekar — [Hugging Face](https://huggingface.co/kavimugil-r) · [Ollama](https://ollama.com/kavimugil-r) · [GitHub](https://github.com/KavimugilRajasekar) |
 | **Licence (code and weights)** | MIT; check the training-data licences in `16_DATASET_CATALOG.md` before redistributing |
 
 ## Versions
@@ -25,9 +32,18 @@
 | v4 | `koto_v4/best_model.pt` (step 11000) | **20.86** | full 12k-step train; most fluent, weaker on identity |
 | v5 | `koto_v5/` | — | fine-tune of v4 with writing help; training (2026-11-21) |
 | v6 | `koto_v6/` | — | full train including writing help; training (2026-11-21) |
+| **1.0.0** | `koto_start/best_model.pt` (= v4) | **20.86** | released; better open chit-chat |
+| **1.1.0** | `koto_1.1.0/best_model.pt` (step 12000) | 22.39 | writing tasks, dialogue skills; not yet released |
+| **1.1.1** | `koto_1.1.0/best_model.pt` (unchanged) | 22.39 | previous release: same weights + reranking, normalisation, provenance-checked GGUFs (`releases/exported/1.1.1/`) |
+| 1.2.0 | `koto_1.2.0/best_model.pt` (step 14000) | — | trained 2026-11-22; identity "Koto, built on Hibari"; better writing / empathy, worse rewriting; **not released** (docs/32) |
+| 1.2.1 | `koto_1.2.1/` | — | data prepared (fewer repeats, more reply variety, rewriting up-weighted); not trained; superseded by 1.3.0 |
+| 1.3.0 | `koto_1.3.0_large/best_model.pt` (step 12000) | 17.72* | **29.4M parameters** (512 / 8 layers / 1536); trained 2026-11-23; training data unconfirmed (see CHANGELOG); evaluated: **not accepted** (behaviour 0.558). *own val set, not comparable |
+| **1.3.1** | `koto_1.3.1_large/best_model.pt` (step 11500) | 16.14* | **current release `Hibari-Koto1.3.1:29M`**: 1.3.0 retrain on the intended mix, fingerprint checked, `resid_dropout 0.1`; behaviour 0.628, conversation 0.733, rewriting 0.33 (docs/34). *1.3.0 mix val set |
+
+> The GGUFs directly in `releases/exported/` contain the **1.0.0** weights (see `releases/exported/README.md`). Use `releases/exported/1.3.1/` (current release).
 
 `best_model.pt` in each run folder is the checkpoint to use. The top-level
-`hibari/models/checkpoints/best_model.pt` is an old v1 step-250 file and
+`checkpoints/best_model.pt` is an old v1 step-250 file and
 should not be used.
 
 ## Intended use
@@ -68,6 +84,20 @@ hand-written polite / email set. See `16_DATASET_CATALOG.md` and
 | GGUF parity (llama.cpp vs PyTorch) | 6/6 identical greedy replies in all 4 formats |
 | Speed (Q8_0, llama.cpp, 6 threads) | ~5,000 tokens/s generation |
 
+## Evaluation (1.1.0 vs 1.0.0, same data, greedy)
+
+| Metric | 1.0.0 | 1.1.0 |
+|---|---|---|
+| Open-conversation val perplexity (old split) | **20.86** | 22.39 |
+| 1.1.0 suite pass rate (routed / unrouted) | 16.7 % / 9.3 % | **53.7 % / 50 %** |
+| Grammar correction cases | 1 / 5 | **5 / 5** |
+| Held-out dialogue cases | 1 / 11 | 6 / 11 |
+| Rewrite output-only rate | 75.9 % | 100 % |
+| Legacy heuristic relevance / grammar | 35.3 % / **94.8 %** | **54.9 %** / 89.7 % |
+
+1.1.0 still invents facts and handles emotional messages unreliably; see
+`docs/19_KOTO_1.1.0_DEVELOPMENT_REPORT.md`.
+
 Full results: `09_EVALUATION_AND_TESTING.md`. Limitations:
 `18_KNOWN_LIMITATIONS.md`.
 
@@ -85,10 +115,10 @@ Full results: `09_EVALUATION_AND_TESTING.md`. Limitations:
 
 | Artifact | Path |
 |---|---|
-| Checkpoints | `hibari/models/checkpoints/koto_v<N>/best_model.pt` |
-| Tokenizer | `hibari/models/tokenizer/` (`tokenizer.json`, `tokenizer_config.json`) |
-| GGUF | `hibari/models/exported/Hibari-Koto-{F32,F16,Q8_0,Q4_K_M}.gguf` (currently v4) |
-| Ollama Modelfile | `release/Modelfile` (template), `hibari/models/exported/Modelfile` |
-| Data caches | `hibari/data/processed*/` |
+| Checkpoints | `checkpoints/koto_v<N>/best_model.pt` |
+| Tokenizer | `tokenizer/` (`tokenizer.json`, `tokenizer_config.json`) |
+| GGUF | `releases/exported/Hibari-Koto-{F32,F16,Q8_0,Q4_K_M}.gguf` (currently v4) |
+| Ollama Modelfile | `release/Modelfile` (template), `releases/exported/Modelfile` |
+| Data caches | `data/processed*/` |
 
 Checkpoints, GGUFs and data caches are gitignored and exist only locally.

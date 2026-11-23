@@ -8,6 +8,16 @@ dataset processing and curated data, tokenizer assets, training and
 evaluation scripts, experiment records and model documentation.
 The engine code (the `hibari` Python package) lives in the Hibari repository.
 
+Author: Kavimugil Rajasekar — [GitHub](https://github.com/KavimugilRajasekar) · [Hugging Face](https://huggingface.co/kavimugil-r) · [Ollama](https://ollama.com/kavimugil-r)
+
+**Current release: Koto 1.3.1 — `Hibari-Koto1.3.1:29M`** (29.4M parameters):
+[Hugging Face](https://huggingface.co/kavimugil-r/Hibari-Koto) · `ollama run kavimugil-r/Hibari-Koto1.3.1:29M` ·
+release report `docs/34_KOTO_1.3.1_RELEASE_REPORT.md`.
+
+Processed training data (`data/processed_1.3.0`, not in git) is in the private Hugging Face dataset
+[`kavimugil-r/koto-data`](https://huggingface.co/datasets/kavimugil-r/koto-data) (owner access only):
+`hf download kavimugil-r/koto-data --repo-type dataset --include "processed_1.3.0/*" --local-dir data`
+
 | Path | Contents |
 |---|---|
 | `MODEL_CARD.md` | Model card |

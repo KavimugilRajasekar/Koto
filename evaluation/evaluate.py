@@ -3,7 +3,7 @@
 Produces, for each checkpoint:
   * validation loss / perplexity (token-weighted), overall and per source,
     on the held-out validation split written by prepare_data.py;
-  * the held-out conversational suite (hibari.evaluation.suite), run on the
+  * the held-out conversational suite (koto.evaluation.suite), run on the
     RAW model (no application safety layer) and through the APP pipeline
     (HibariChatSession with the deterministic safety layer), with greedy
     decoding and with the default sampling settings (seeded);
@@ -12,12 +12,20 @@ Produces, for each checkpoint:
   * CPU latency (first token, tokens/s) and peak RSS.
 
 Usage:
-    python hibari/scripts/evaluate.py \
-        --checkpoint hibari/models/checkpoints/koto_start/best_model.pt \
-        --out release/evaluation_report
+    python evaluation/evaluate.py \
+        --checkpoint checkpoints/koto_start/best_model.pt \
+        --out outputs/evaluation/legacy_report
+
+The 1.1.0 conversation / rephrasing suite is run by evaluation/evaluate_upgrade.py.
 """
 
 from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import koto  # noqa: E402,F401  (makes the hibari engine importable)
 
 import argparse
 import collections
@@ -25,7 +33,6 @@ import json
 import platform
 import resource
 import time
-from pathlib import Path
 from typing import Dict, List
 
 import torch
@@ -35,12 +42,13 @@ from hibari.data.collator import DataCollatorForCausalLM
 from hibari.data.dataset import ConversationDataset
 from hibari.data.formatting import DEFAULT_SYSTEM_PROMPT
 from hibari.data.tokenizer import HibariTokenizer
-from hibari.evaluation.suite import CASES, REPORTED_PROMPTS, EvalCase, distinct_n, score_case
 from hibari.inference.conversation import HibariChatSession
 from hibari.inference.generation import generate_tokens
 from hibari.inference.safety import assess_message, clean_response
 from hibari.training.checkpoint import load_checkpoint
 from hibari.training.trainer import evaluate_loss
+from koto.evaluation.suite import CASES, REPORTED_PROMPTS, EvalCase, distinct_n, score_case
+from koto.paths import DATA_DIR, EVAL_OUTPUT_DIR, TOKENIZER_DIR, resolve
 
 GREEDY = dict(temperature=0.0, top_k=0, top_p=1.0, repetition_penalty=1.0)
 SAMPLED = dict(temperature=0.5, top_k=25, top_p=0.85, repetition_penalty=1.15)
@@ -48,7 +56,7 @@ MAX_NEW = 64
 
 
 def val_metrics(model, tok, val_path: Path, limit: int) -> Dict:
-    recs = json.loads(val_path.read_text())[:limit]
+    recs = json.loads(val_path.read_text(encoding="utf-8"))[:limit]
     by_src = collections.defaultdict(list)
     for r in recs:
         by_src[r.get("source", "unknown") if isinstance(r, dict) else "unknown"].append(r)
@@ -210,13 +218,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--checkpoint", required=True)
     ap.add_argument("--compare", nargs="*", default=[], help="Other checkpoints to evaluate side by side")
-    ap.add_argument("--tokenizer-dir", default="hibari/models/tokenizer")
-    ap.add_argument("--val", default="hibari/data/processed/val_conversations.json")
+    ap.add_argument("--tokenizer-dir", default=str(TOKENIZER_DIR))
+    ap.add_argument("--val", default=str(DATA_DIR / "processed" / "val_conversations.json"))
     ap.add_argument("--val-limit", type=int, default=4000)
-    ap.add_argument("--out", default="release/evaluation_report")
+    ap.add_argument("--out", default=str(EVAL_OUTPUT_DIR / "legacy_report"))
     a = ap.parse_args()
 
-    tok = HibariTokenizer.load(a.tokenizer_dir)
+    tok = HibariTokenizer.load(resolve(a.tokenizer_dir))
     report = {
         "generated": time.strftime("%Y-%m-%d %H:%M:%S"),
         "machine": f"{platform.processor() or platform.machine()}, torch {torch.__version__}, threads {torch.get_num_threads()}",
@@ -224,13 +232,13 @@ def main():
     }
     for ck in [a.checkpoint] + a.compare:
         print(f"Evaluating {ck} ...")
-        report["results"].append(evaluate_checkpoint(ck, tok, Path(a.val), a.val_limit))
+        report["results"].append(evaluate_checkpoint(str(resolve(ck)), tok, resolve(a.val), a.val_limit))
     report["peak_rss_mib"] = round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, 1)
 
-    out = Path(a.out)
+    out = resolve(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.with_suffix(".json").write_text(json.dumps(report, indent=2, ensure_ascii=False))
-    out.with_suffix(".md").write_text(to_markdown(report))
+    out.with_suffix(".json").write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+    out.with_suffix(".md").write_text(to_markdown(report), encoding="utf-8")
     for r in report["results"]:
         print(r["checkpoint"], json.dumps(r["greedy"]["summary"]), r["validation"]["overall"] if r["validation"] else "")
     print(f"Wrote {out.with_suffix('.json')} and {out.with_suffix('.md')}")

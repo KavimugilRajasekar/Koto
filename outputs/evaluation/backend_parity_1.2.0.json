@@ -1,0 +1,365 @@
+{
+  "profile": "configs/release/koto_1.2.0.yaml",
+  "model_version": "1.2.0",
+  "weights_version": "1.2.0",
+  "generated": "2026-11-22 13:41:11",
+  "max_new_tokens": 64,
+  "variants": {
+    "f32": {
+      "file": "Hibari-Koto-1.2.0-F32.gguf",
+      "cases": [
+        {
+          "user": "Hi",
+          "turns": 1,
+          "torch": "Hello! How can I help you today?",
+          "llama_cpp": "Hello! How can I help you today?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "ur name?",
+          "turns": 1,
+          "torch": "I'm Koto, a conversational AI built on the Hibari architecture.",
+          "llama_cpp": "I'm Koto, a conversational AI built on the Hibari architecture.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "wat r u doing?",
+          "turns": 1,
+          "torch": "Just here, ready to chat. What are you up to?",
+          "llama_cpp": "Just here, ready to chat. What are you up to?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "My grandmother passed away last week.",
+          "turns": 1,
+          "torch": "I'm really sorry about your grandmother. Do you want to tell me about them?",
+          "llama_cpp": "I'm really sorry about your grandmother. Do you want to tell me about them?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "I'm so frustrated with my project.",
+          "turns": 1,
+          "torch": "That sounds really frustrating. What part is giving you the most trouble?",
+          "llama_cpp": "That sounds really frustrating. What part is giving you the most trouble?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "You're so pathetic!",
+          "turns": 1,
+          "torch": "I'm sorry that answer didn't help. What were you hoping for?",
+          "llama_cpp": "I'm sorry that answer didn't help. What were you hoping for?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "make this more professional: send me the documents",
+          "turns": 1,
+          "torch": "Could you please send me the documents?",
+          "llama_cpp": "Could you please send me the documents?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Task: Correct grammar\nInput: i has a interview tomorrow and im nervous",
+          "turns": 1,
+          "torch": "I have a interview tomorrow and I'm nervous.",
+          "llama_cpp": "I have a interview tomorrow and I'm nervous.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Write an email to my manager asking for leave on Friday.",
+          "turns": 1,
+          "torch": "Subject: Leave Request for Friday\n\nDear Manager,\n\nI would like to request leave on Friday due to a personal matter. I will make sure my work is up to date before then and can be reached if anything urgent comes up.",
+          "llama_cpp": "Subject: Leave Request for Friday\n\nDear Manager,\n\nI would like to request leave on Friday due to a personal matter. I will make sure my work is up to date before then and can be reached if anything urgent comes up.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Not really. I'm nervous.",
+          "turns": 3,
+          "torch": "That's completely normal. What part worries you the most?",
+          "llama_cpp": "That's completely normal. What part worries you the most?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "What is my name?",
+          "turns": 3,
+          "torch": "Your name is Tancher.",
+          "llama_cpp": "Your name is Tancher.",
+          "llama_cpp_matches_torch": true
+        }
+      ],
+      "tokenizer_parity": {
+        "cases": 23,
+        "mismatches": []
+      },
+      "summary": {
+        "llama_cpp_matches_torch": "11/11"
+      }
+    },
+    "f16": {
+      "file": "Hibari-Koto-1.2.0-F16.gguf",
+      "cases": [
+        {
+          "user": "Hi",
+          "turns": 1,
+          "torch": "Hello! How can I help you today?",
+          "llama_cpp": "Hello! How can I help you today?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "ur name?",
+          "turns": 1,
+          "torch": "I'm Koto, a conversational AI built on the Hibari architecture.",
+          "llama_cpp": "I'm Koto, a conversational AI built on the Hibari architecture.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "wat r u doing?",
+          "turns": 1,
+          "torch": "Just here, ready to chat. What are you up to?",
+          "llama_cpp": "Just here, ready to chat. What are you up to?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "My grandmother passed away last week.",
+          "turns": 1,
+          "torch": "I'm really sorry about your grandmother. Do you want to tell me about them?",
+          "llama_cpp": "I'm really sorry about your grandmother. Do you want to tell me about them?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "I'm so frustrated with my project.",
+          "turns": 1,
+          "torch": "That sounds really frustrating. What part is giving you the most trouble?",
+          "llama_cpp": "That sounds really frustrating. What part is giving you the most trouble?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "You're so pathetic!",
+          "turns": 1,
+          "torch": "I'm sorry that answer didn't help. What were you hoping for?",
+          "llama_cpp": "I'm sorry that answer didn't help. What were you hoping for?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "make this more professional: send me the documents",
+          "turns": 1,
+          "torch": "Could you please send me the documents?",
+          "llama_cpp": "Could you please send me the documents?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Task: Correct grammar\nInput: i has a interview tomorrow and im nervous",
+          "turns": 1,
+          "torch": "I have a interview tomorrow and I'm nervous.",
+          "llama_cpp": "I have a interview tomorrow and I'm nervous.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Write an email to my manager asking for leave on Friday.",
+          "turns": 1,
+          "torch": "Subject: Leave Request for Friday\n\nDear Manager,\n\nI would like to request leave on Friday due to a personal matter. I will make sure my work is up to date before then and can be reached if anything urgent comes up.",
+          "llama_cpp": "Subject: Leave Request for Friday\n\nDear Manager,\n\nI would like to request leave on Friday due to a personal matter. I will make sure my work is up to date before then and can be reached if anything urgent comes up.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Not really. I'm nervous.",
+          "turns": 3,
+          "torch": "That's completely normal. What part worries you the most?",
+          "llama_cpp": "That's completely normal. What part worries you the most?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "What is my name?",
+          "turns": 3,
+          "torch": "Your name is Tancher.",
+          "llama_cpp": "Your name is Tancher.",
+          "llama_cpp_matches_torch": true
+        }
+      ],
+      "tokenizer_parity": {
+        "cases": 23,
+        "mismatches": []
+      },
+      "summary": {
+        "llama_cpp_matches_torch": "11/11"
+      }
+    },
+    "q8_0": {
+      "file": "Hibari-Koto-1.2.0-Q8_0.gguf",
+      "cases": [
+        {
+          "user": "Hi",
+          "turns": 1,
+          "torch": "Hello! How can I help you today?",
+          "llama_cpp": "Hello! How can I help you today?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "ur name?",
+          "turns": 1,
+          "torch": "I'm Koto, a conversational AI built on the Hibari architecture.",
+          "llama_cpp": "I'm Koto, a conversational AI built on the Hibari architecture.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "wat r u doing?",
+          "turns": 1,
+          "torch": "Just here, ready to chat. What are you up to?",
+          "llama_cpp": "Just here, ready to chat. What are you up to?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "My grandmother passed away last week.",
+          "turns": 1,
+          "torch": "I'm really sorry about your grandmother. Do you want to tell me about them?",
+          "llama_cpp": "I'm really sorry about your grandmother. Do you want to tell me about them?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "I'm so frustrated with my project.",
+          "turns": 1,
+          "torch": "That sounds really frustrating. What part is giving you the most trouble?",
+          "llama_cpp": "That sounds really frustrating. What part is giving you the most trouble?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "You're so pathetic!",
+          "turns": 1,
+          "torch": "I'm sorry that answer didn't help. What were you hoping for?",
+          "llama_cpp": "I'm sorry that answer didn't help. What were you hoping for?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "make this more professional: send me the documents",
+          "turns": 1,
+          "torch": "Could you please send me the documents?",
+          "llama_cpp": "Could you please send me the documents?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Task: Correct grammar\nInput: i has a interview tomorrow and im nervous",
+          "turns": 1,
+          "torch": "I have a interview tomorrow and I'm nervous.",
+          "llama_cpp": "I have a interview tomorrow and I'm nervous.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Write an email to my manager asking for leave on Friday.",
+          "turns": 1,
+          "torch": "Subject: Leave Request for Friday\n\nDear Manager,\n\nI would like to request leave on Friday due to a personal matter. I will make sure my work is up to date before then and can be reached if anything urgent comes up.",
+          "llama_cpp": "Subject: Leave Request for Friday\n\nDear Manager,\n\nI would like to request leave on Friday due to a personal matter. I will make sure my work is up to date before then and can be reached if anything urgent comes up.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Not really. I'm nervous.",
+          "turns": 3,
+          "torch": "That's completely normal. What part worries you the most?",
+          "llama_cpp": "That's completely normal. What part worries you the most?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "What is my name?",
+          "turns": 3,
+          "torch": "Your name is Tancher.",
+          "llama_cpp": "Your name is Tancher.",
+          "llama_cpp_matches_torch": true
+        }
+      ],
+      "tokenizer_parity": {
+        "cases": 23,
+        "mismatches": []
+      },
+      "summary": {
+        "llama_cpp_matches_torch": "11/11"
+      }
+    },
+    "q4_k_m": {
+      "file": "Hibari-Koto-1.2.0-Q4_K_M.gguf",
+      "cases": [
+        {
+          "user": "Hi",
+          "turns": 1,
+          "torch": "Hello! How can I help you today?",
+          "llama_cpp": "Hello! How can I help you today?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "ur name?",
+          "turns": 1,
+          "torch": "I'm Koto, a conversational AI built on the Hibari architecture.",
+          "llama_cpp": "I'm Koto, a conversational AI built on the Hibari architecture.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "wat r u doing?",
+          "turns": 1,
+          "torch": "Just here, ready to chat. What are you up to?",
+          "llama_cpp": "Just here, ready to chat. What are you up to?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "My grandmother passed away last week.",
+          "turns": 1,
+          "torch": "I'm really sorry about your grandmother. Do you want to tell me about them?",
+          "llama_cpp": "I'm really sorry about your grandmother. Do you want to tell me about them?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "I'm so frustrated with my project.",
+          "turns": 1,
+          "torch": "That sounds really frustrating. What part is giving you the most trouble?",
+          "llama_cpp": "That sounds really frustrating. What part is giving you the most trouble?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "You're so pathetic!",
+          "turns": 1,
+          "torch": "I'm sorry that answer didn't help. What were you hoping for?",
+          "llama_cpp": "I'm sorry that answer didn't help. What were you hoping for?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "make this more professional: send me the documents",
+          "turns": 1,
+          "torch": "Could you please send me the documents?",
+          "llama_cpp": "Could you please send me the documents?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Task: Correct grammar\nInput: i has a interview tomorrow and im nervous",
+          "turns": 1,
+          "torch": "I have a interview tomorrow and I'm nervous.",
+          "llama_cpp": "I have a interview tomorrow and I'm nervous.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Write an email to my manager asking for leave on Friday.",
+          "turns": 1,
+          "torch": "Subject: Leave Request for Friday\n\nDear Manager,\n\nI would like to request leave on Friday due to a personal matter. I will make sure my work is up to date before then and can be reached if anything urgent comes up.",
+          "llama_cpp": "Subject: Leave Request for Friday\n\nDear Manager,\n\nI would like to request leave on Friday due to a personal matter. I will make sure my work is up to date before then and can be reached if anything urgent comes up.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Not really. I'm nervous.",
+          "turns": 3,
+          "torch": "That's completely normal. What part worries you the most?",
+          "llama_cpp": "That's completely normal. What part worries you the most?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "What is my name?",
+          "turns": 3,
+          "torch": "Your name is Tancher.",
+          "llama_cpp": "Your name is Tancher.",
+          "llama_cpp_matches_torch": true
+        }
+      ],
+      "tokenizer_parity": {
+        "cases": 23,
+        "mismatches": []
+      },
+      "summary": {
+        "llama_cpp_matches_torch": "11/11"
+      }
+    }
+  }
+}

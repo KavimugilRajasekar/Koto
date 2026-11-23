@@ -1,8 +1,45 @@
 # 18 — Known Limitations (Hibari Koto)
 
 Measured results are in `09_EVALUATION_AND_TESTING.md` and in the
-`hibari/outputs/metrics/eval_*.md` reports. This page explains what the
+`outputs/metrics/eval_*.md` reports. This page explains what the
 numbers mean in practice.
+
+## Koto 1.1.1 (measured 2026-11-22)
+
+Details: `31_KOTO_1.1.1_REPAIR_REPORT.md`, transcripts in `outputs/evaluation/koto_1.1.1_behaviour.md`.
+
+* **Reranking chooses, it cannot create.** When none of 8–16 sampled replies is good
+  ("You're so pathetic!", live weather, "what architecture do you run on?") the best
+  poor reply is returned. These need the 1.2.0 data.
+* **Emotion without a feeling word is missed** by the message analyzer ("Nobody came to my
+  birthday party."), so a cheerful reply can still win.
+* **Python only.** Safety, routing, normalisation and reranking do not exist in llama.cpp /
+  Ollama; the raw model scores 0.48–0.54 on the behaviour suite against 0.66 in Python.
+* **Latency** ~0.8 s per turn on CPU (vs ~0.08 s with one candidate).
+* **Identity wording** in replies is "Hibari Koto" (in the weights).
+* **Q4_K_M** differs from PyTorch on 3–5 of 11 greedy prompts; use Q8_0 or better.
+* Automatic suite checks are heuristics; a pass is not proof of a good reply.
+
+## Koto 1.1.0 (measured 2026-11-22)
+
+Details and transcripts: `19_KOTO_1.1.0_DEVELOPMENT_REPORT.md`.
+
+* **Open conversation got slightly worse.** Old-split validation perplexity
+  20.86 (1.0.0) → 22.39 (1.1.0), worse on every general source. The same 6M
+  parameters now also cover writing tasks.
+* **Still invents facts.** "The capital of Japan is Berlin"; an invented
+  weather forecast and a nonsense "prime minister" answer. The honest-limit
+  data helps mainly for question types close to its templates (obscure
+  figures, private facts), not for live data or general facts.
+* **Context recall is partial.** Some facts are recalled ("You are in
+  Coimbatore."), others come back wrong ("My name was Tancel." for Tanvir;
+  the user's name instead of their subject).
+* **Empathy and feedback are unreliable.** "I failed my driving test … I feel
+  useless" → "I am sure you did well on it."
+* **Writing tasks:** grammar correction passed 5 / 5 suite cases, but a
+  fresh, more broken sentence ("i am not understand what you trying to say")
+  was not corrected; formal rewrites pass 1 / 4.
+* **More variation between seeds** than 1.0.0 (routed pass agreement 0.96 → 0.85).
 
 ## Model capacity
 

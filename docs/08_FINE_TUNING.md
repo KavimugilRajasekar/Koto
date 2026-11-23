@@ -9,11 +9,11 @@ yet.
 ## Recipe
 
 1. Edit or add training examples:
-   * behaviour / identity → `hibari/src/hibari/data/curated.py` (`INTENTS`, `MULTI_TURN`)
-   * writing help → `hibari/src/hibari/data/rewrite.py`
+   * behaviour / identity → `koto/data/curated.py` (`INTENTS`, `MULTI_TURN`)
+   * writing help → `koto/data/rewrite.py`
 2. Build a mix from the local cache (the chat data is not downloaded again):
    ```bash
-   python hibari/scripts/build_finetune_mix.py --dst hibari/data/processed_v5 \
+   python scripts/build_finetune_mix.py --dst data/processed_v5 \
      --replay 30000 --curated-repeats 4 \
      --coedit 12000 --paradetox 6000 --smol-rewrite 5000 --polite-repeats 2
    ```
@@ -22,17 +22,17 @@ yet.
    they were drowned out.
 3. Train from the base checkpoint into a **new** `output_dir`:
    ```bash
-   python hibari/scripts/train.py \
-     --train-config hibari/configs/training/koto_v5.yaml \
-     --data-cache-dir hibari/data/processed_v5 \
-     --checkpoint hibari/models/checkpoints/koto_v4/best_model.pt
+   python training/train.py \
+     --train-config configs/training/koto_v5.yaml \
+     --data-cache-dir data/processed_v5 \
+     --checkpoint checkpoints/koto_v4/best_model.pt
    ```
    Use a lower LR than from-scratch training (3e-4 instead of 1e-3) and a
    short warmup.
 4. Evaluate against the base (`09_EVALUATION_AND_TESTING.md`), export, and
    load into Ollama under a new tag.
 
-Do not reuse prompts from `hibari/src/hibari/evaluation/suite.py` in the
+Do not reuse prompts from `koto/evaluation/suite.py` in the
 training data; `tests/test_evaluation.py` fails if you do.
 
 ## Fine-tunes so far
@@ -57,6 +57,6 @@ Loss is computed on assistant tokens only.
 
 ## Not implemented
 
-`hibari/scripts/fine_tune.py`, `hibari/configs/training/sft.yaml` (which
-mentions LoRA) and `hibari/src/hibari/training/fine_tuning.py` are
-placeholders. LoRA adapters (`hibari/models/adapters/`) are a roadmap item.
+`training/fine_tune.py`, `hibari/configs/training/sft.yaml` (which
+mentions LoRA) and `../../src/hibari/training/fine_tuning.py` are
+placeholders. LoRA adapters (`checkpoints/adapters/`) are a roadmap item.

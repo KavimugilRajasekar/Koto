@@ -1,0 +1,33 @@
+# Koto 1.1.0 — data mix (built by scripts/build_mix.py; no downloads).
+# General conversation comes from the already-processed corpus in data/processed
+# (sources and licences: docs/16_DATASET_CATALOG.md). Writing-task sources are
+# read from the local Hugging Face cache (HF_HUB_OFFLINE=1). Every rewrite reply
+# is the rewritten text only; prompts use the canonical engine task format
+# (hibari.inference.tasks.format_task_request) for `canonical_share` of the
+# examples and a natural request ("Rephrase this sentence: ...") otherwise.
+experiment: koto-1.1.0
+general_src: data/processed          # train/val_conversations.json from prepare_data.py (v2 corpus)
+out_dir: data/processed_1.1.0
+tokenizer_dir: tokenizer
+max_seq_len: 256
+
+general_train: all                   # or an integer cap
+curated_repeats: 3                   # koto.data.curated (identity, personality, safety)
+conversation_repeats: 4              # koto.data.conversation (small talk, explanations, context chains)
+conversation_variants: 3             # phrasing variants generated per template before de-duplication
+emails: 400                          # templated short emails (chat request, keeps its lead)
+dialogue_skills_repeats: 2           # koto.data.dialogue_skills (recall, clarification, honest limits, chat vs correction)
+recall_conversations: 1500           # slot-filled context-recall conversations
+
+tasks:
+  coedit: {gec: 9000, paraphrase: 4000, simplification: 2500, clarity: 1252}
+  paradetox: 5000
+  smol_rewrite: 2500                 # only examples that fit the context are kept
+  polite_templated: 600
+  handwritten_repeats: 2             # koto.data.tasks hand-written sets
+  task_repeats: {casual: 4, shorten: 4, formal: 2}   # up-weight the smallest task families (train only)
+
+canonical_share: 0.5
+val_pct: 4                           # stable hash split of task / conversation sources
+test_pct: 4
+seed: 110

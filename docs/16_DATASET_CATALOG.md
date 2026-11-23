@@ -19,7 +19,7 @@ model.
 | OpenAssistant OASST1 (English, rank-0) | `OpenAssistant/oasst1` | apache-2.0 | 3,065 / 167 | general Q&A |
 
 Counts are after cleaning, windowing, de-duplication and caps (base corpus
-`hibari/data/processed/`, 71,715 train / 2,933 val). Fine-tune mixes sample
+`data/processed/`, 71,715 train / 2,933 val). Fine-tune mixes sample
 from this cache (`05_DATA_PIPELINE.md`).
 
 ## Writing-help data (v5 and later)
@@ -54,8 +54,11 @@ the 256-token context.
 
 | Module | Size | Content |
 |---|---|---|
-| `hibari/src/hibari/data/curated.py` | 1,209 conversations | identity and creator, honesty about being a small AI, emotions, insults, harassment, being told to die, "I hate you", friend and family conflicts, "I already told you", hobbies / about you, crisis and violence replies, refusals, simple facts, multi-turn chains |
-| `hibari/src/hibari/data/rewrite.py` (`build_polite_conversations`) | 1,160 conversations | 40 informal → polite pairs, 5 templated leave / sick / late families, 8 email topics × 6 recipients |
+| `koto/data/curated.py` | 1,209 conversations | identity and creator, honesty about being a small AI, emotions, insults, harassment, being told to die, "I hate you", friend and family conflicts, "I already told you", hobbies / about you, crisis and violence replies, refusals, simple facts, multi-turn chains |
+| `koto/data/conversation.py` | 2,460 train examples in 1.1.0 | small talk, 37 explained topics, fun facts, career advice, 3-turn context chains |
+| `koto/data/dialogue_skills.py` | 1,677 unique (3,354 train examples ×2) | context recall, clarification questions, honest "I don't know", chat vs. correction, multiple / repeated questions |
+| `koto/data/tasks.py` | hand-written rewriting sets | grammar, rephrase, formal / casual / shorter / simpler, meaning preservation |
+| `koto/data/rewrite.py` (`build_polite_conversations`) | 1,160 conversations | 40 informal → polite pairs, 5 templated leave / sick / late families, 8 email topics × 6 recipients |
 
 ## Combined
 
@@ -65,6 +68,7 @@ the 256-token context.
 | v4 (`processed_full`) | 73,428 | 0 % | 4.4 % |
 | v5 (`processed_v5`) | 57,455 | 39 % | 8.4 % |
 | v6 (`processed_full_v6`) | 107,634 | 30 % | 4.5 % |
+| 1.1.0 (`processed_1.1.0`) | 108,850 | 26.5 % | 3.3 % (+3.1 % dialogue skills) |
 
 Loss is computed on assistant tokens only (system and user tokens are
 `-100`). Special tokens: `<|system|>`, `<|user|>`, `<|assistant|>`,
