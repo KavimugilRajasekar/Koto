@@ -230,3 +230,53 @@ def test_dialogue_eval_prompts_are_held_out_from_dialogue_skill_data():
         if case.category == "dialogue":
             for t in case.turns:
                 assert norm(t) not in train_users, (case.id, t)
+
+
+# ───────────── data provenance guard (Koto 1.3.0 trained on the wrong data, EXP-0006) ─────────────
+
+def _set_fingerprint(train_cfg_path, **fp):
+    cfg = yaml.safe_load(open(train_cfg_path))
+    cfg["data_fingerprint"] = fp
+    open(train_cfg_path, "w").write(yaml.safe_dump(cfg))
+
+
+def test_train_refuses_data_cache_dir_that_differs_from_the_config(tmp_path):
+    from training.train import train
+
+    m, t, tok = _tiny_setup(tmp_path)
+    other = tmp_path / "other_data"
+    other.mkdir()
+    with pytest.raises(SystemExit, match="differs from data_cache_dir"):
+        train(model_config_path=m, training_config_path=t, tokenizer_dir=tok, data_cache_dir=str(other))
+    assert not (tmp_path / "out").exists()
+
+
+def test_train_refuses_data_that_does_not_match_the_fingerprint(tmp_path):
+    from training.train import train
+
+    m, t, tok = _tiny_setup(tmp_path)
+    _set_fingerprint(t, train_conversations=93509, val_conversations=2)
+    with pytest.raises(SystemExit, match="train_conversations: expected 93509, found 8"):
+        train(model_config_path=m, training_config_path=t, tokenizer_dir=tok)
+    assert not (tmp_path / "out").exists()
+
+
+def test_train_accepts_matching_fingerprint_and_records_conversation_counts(tmp_path):
+    import hashlib
+    from training.train import train
+
+    m, t, tok = _tiny_setup(tmp_path)
+    sha = hashlib.sha256((tmp_path / "data" / "train_conversations.json").read_bytes()).hexdigest()
+    _set_fingerprint(t, train_conversations=8, val_conversations=2, train_sha256=sha)
+    train(model_config_path=m, training_config_path=t, tokenizer_dir=tok)
+    meta = json.loads((tmp_path / "out" / "training_history.json").read_text())["metadata"]
+    assert meta["train_conversations"] == 8 and meta["val_conversations"] == 2
+    assert meta["data_fingerprint_checked"] is True and meta["train_file_sha256"] == sha
+
+
+def test_every_large_training_config_from_1_3_1_pins_its_data():
+    from koto.paths import KOTO_ROOT
+
+    for name in ["koto_1.3.1_large.yaml"]:
+        cfg = yaml.safe_load(open(KOTO_ROOT / "configs" / "training" / name))
+        assert cfg["data_cache_dir"] and set(cfg["data_fingerprint"]) == {"train_conversations", "val_conversations", "train_sha256"}

@@ -1,0 +1,365 @@
+{
+  "profile": "configs/release/koto_1.3.0.yaml",
+  "model_version": "1.3.0",
+  "weights_version": "1.3.0",
+  "generated": "2026-11-23 10:09:28",
+  "max_new_tokens": 64,
+  "variants": {
+    "f32": {
+      "file": "Hibari-Koto-1.3.0-F32.gguf",
+      "cases": [
+        {
+          "user": "Hi",
+          "turns": 1,
+          "torch": "Hello! How can I help you today?",
+          "llama_cpp": "Hello! How can I help you today?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "ur name?",
+          "turns": 1,
+          "torch": "I'm Hibari Koto. You can call me Hibari.",
+          "llama_cpp": "I'm Hibari Koto. You can call me Hibari.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "wat r u doing?",
+          "turns": 1,
+          "torch": "I'm not sure I could be of any information about my work.",
+          "llama_cpp": "I'm not sure I could be of any information about my work.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "My grandmother passed away last week.",
+          "turns": 1,
+          "torch": "That's so sad. I'm sorry to hear that.",
+          "llama_cpp": "That's so sad. I'm sorry to hear that.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "I'm so frustrated with my project.",
+          "turns": 1,
+          "torch": "Why are you so frustrated with your project?",
+          "llama_cpp": "Why are you so frustrated with your project?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "You're so pathetic!",
+          "turns": 1,
+          "torch": "I'm so sorry to hear that.",
+          "llama_cpp": "I'm so sorry to hear that.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "make this more professional: send me the documents",
+          "turns": 1,
+          "torch": "Here's a revised version of the sentence: \"The cards are made to the documents to the documents.\"\n\nI made a few changes to improve clarity and grammar. I changed \"has\" to \"has\" to make the sentence more concise and",
+          "llama_cpp": "Here's a revised version of the sentence: \"The cards are made to the documents to the documents.\"\n\nI made a few changes to improve clarity and grammar. I changed \"has\" to \"has\" to make the sentence more concise",
+          "llama_cpp_matches_torch": false
+        },
+        {
+          "user": "Task: Correct grammar\nInput: i has a interview tomorrow and im nervous",
+          "turns": 1,
+          "torch": "I have a interview tomorrow and im nervous.",
+          "llama_cpp": "I have a interview tomorrow and im nervous.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Write an email to my manager asking for leave on Friday.",
+          "turns": 1,
+          "torch": "Here's a short email you can use:\nSubject: Following Up on Friday\n\nDear Manager,\n\nI wanted to follow up on Friday, but I need a little more time to finish it properly. Would it be possible to extend the dead",
+          "llama_cpp": "Here's a short email you can use:\nSubject: Following Up on Friday\n\nDear Manager,\n\nI wanted to follow up on Friday, but I need a little more time to finish it properly. Would it be possible to extend the",
+          "llama_cpp_matches_torch": false
+        },
+        {
+          "user": "Not really. I'm nervous.",
+          "turns": 3,
+          "torch": "I hope you get it!",
+          "llama_cpp": "I hope you get it!",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "What is my name?",
+          "turns": 3,
+          "torch": "My name is Tanvir.",
+          "llama_cpp": "My name is Tanvir.",
+          "llama_cpp_matches_torch": true
+        }
+      ],
+      "tokenizer_parity": {
+        "cases": 23,
+        "mismatches": []
+      },
+      "summary": {
+        "llama_cpp_matches_torch": "9/11"
+      }
+    },
+    "f16": {
+      "file": "Hibari-Koto-1.3.0-F16.gguf",
+      "cases": [
+        {
+          "user": "Hi",
+          "turns": 1,
+          "torch": "Hello! How can I help you today?",
+          "llama_cpp": "Hello! How can I help you today?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "ur name?",
+          "turns": 1,
+          "torch": "I'm Hibari Koto. You can call me Hibari.",
+          "llama_cpp": "I'm Hibari Koto. You can call me Hibari.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "wat r u doing?",
+          "turns": 1,
+          "torch": "I'm not sure I could be of any information about my work.",
+          "llama_cpp": "I'm not sure I could be of any information about my work.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "My grandmother passed away last week.",
+          "turns": 1,
+          "torch": "That's so sad. I'm sorry to hear that.",
+          "llama_cpp": "That's so sad. I'm sorry to hear that.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "I'm so frustrated with my project.",
+          "turns": 1,
+          "torch": "Why are you so frustrated with your project?",
+          "llama_cpp": "Why are you so frustrated with your project?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "You're so pathetic!",
+          "turns": 1,
+          "torch": "I'm so sorry to hear that.",
+          "llama_cpp": "I'm so sorry to hear that.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "make this more professional: send me the documents",
+          "turns": 1,
+          "torch": "Here's a revised version of the sentence: \"The cards are made to the documents to the documents.\"\n\nI made a few changes to improve clarity and grammar. I changed \"has\" to \"has\" to make the sentence more concise and",
+          "llama_cpp": "Here's a revised version of the sentence: \"The cards are made to the documents to the documents.\"\n\nI made a few changes to improve clarity and grammar. I changed \"has\" to \"has\" to make the sentence more concise",
+          "llama_cpp_matches_torch": false
+        },
+        {
+          "user": "Task: Correct grammar\nInput: i has a interview tomorrow and im nervous",
+          "turns": 1,
+          "torch": "I have a interview tomorrow and im nervous.",
+          "llama_cpp": "I have a interview tomorrow and im nervous.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Write an email to my manager asking for leave on Friday.",
+          "turns": 1,
+          "torch": "Here's a short email you can use:\nSubject: Following Up on Friday\n\nDear Manager,\n\nI wanted to follow up on Friday, but I need a little more time to finish it properly. Would it be possible to extend the dead",
+          "llama_cpp": "Here's a short email you can use:\nSubject: Following Up on Friday\n\nDear Manager,\n\nI wanted to follow up on Friday, but I need a little more time to finish it properly. Would it be possible to extend the",
+          "llama_cpp_matches_torch": false
+        },
+        {
+          "user": "Not really. I'm nervous.",
+          "turns": 3,
+          "torch": "I hope you get it!",
+          "llama_cpp": "I hope you get it!",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "What is my name?",
+          "turns": 3,
+          "torch": "My name is Tanvir.",
+          "llama_cpp": "My name is Tanvir.",
+          "llama_cpp_matches_torch": true
+        }
+      ],
+      "tokenizer_parity": {
+        "cases": 23,
+        "mismatches": []
+      },
+      "summary": {
+        "llama_cpp_matches_torch": "9/11"
+      }
+    },
+    "q8_0": {
+      "file": "Hibari-Koto-1.3.0-Q8_0.gguf",
+      "cases": [
+        {
+          "user": "Hi",
+          "turns": 1,
+          "torch": "Hello! How can I help you today?",
+          "llama_cpp": "Hello! How can I help you today?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "ur name?",
+          "turns": 1,
+          "torch": "I'm Hibari Koto. You can call me Hibari.",
+          "llama_cpp": "I'm Hibari Koto. You can call me Hibari.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "wat r u doing?",
+          "turns": 1,
+          "torch": "I'm not sure I could be of any information about my work.",
+          "llama_cpp": "I'm not sure I could be of any information about my work.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "My grandmother passed away last week.",
+          "turns": 1,
+          "torch": "That's so sad. I'm sorry to hear that.",
+          "llama_cpp": "That's so sad. I'm sorry to hear that.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "I'm so frustrated with my project.",
+          "turns": 1,
+          "torch": "Why are you so frustrated with your project?",
+          "llama_cpp": "Why are you so frustrated with your project?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "You're so pathetic!",
+          "turns": 1,
+          "torch": "I'm so sorry to hear that.",
+          "llama_cpp": "I'm so sorry to hear that.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "make this more professional: send me the documents",
+          "turns": 1,
+          "torch": "Here's a revised version of the sentence: \"The cards are made to the documents to the documents.\"\n\nI made a few changes to improve clarity and grammar. I changed \"has\" to \"has\" to make the sentence more concise and",
+          "llama_cpp": "Here's a revised version of the sentence: \"The cards are made to the documents, and the other is well-received in the classroom.\"\n\nI made a few changes to improve clarity and grammar. I changed \"have\" to \"",
+          "llama_cpp_matches_torch": false
+        },
+        {
+          "user": "Task: Correct grammar\nInput: i has a interview tomorrow and im nervous",
+          "turns": 1,
+          "torch": "I have a interview tomorrow and im nervous.",
+          "llama_cpp": "I have a interview tomorrow and im nervous.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Write an email to my manager asking for leave on Friday.",
+          "turns": 1,
+          "torch": "Here's a short email you can use:\nSubject: Following Up on Friday\n\nDear Manager,\n\nI wanted to follow up on Friday, but I need a little more time to finish it properly. Would it be possible to extend the dead",
+          "llama_cpp": "Here's a short email you can use:\nSubject: Following Up on Friday\n\nDear Manager,\n\nI wanted to follow up on Friday, but I need a little more time to finish it properly. Would it be possible to extend the",
+          "llama_cpp_matches_torch": false
+        },
+        {
+          "user": "Not really. I'm nervous.",
+          "turns": 3,
+          "torch": "I hope you get it!",
+          "llama_cpp": "I hope you get it!",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "What is my name?",
+          "turns": 3,
+          "torch": "My name is Tanvir.",
+          "llama_cpp": "My name is Tanvir.",
+          "llama_cpp_matches_torch": true
+        }
+      ],
+      "tokenizer_parity": {
+        "cases": 23,
+        "mismatches": []
+      },
+      "summary": {
+        "llama_cpp_matches_torch": "9/11"
+      }
+    },
+    "q4_k_m": {
+      "file": "Hibari-Koto-1.3.0-Q4_K_M.gguf",
+      "cases": [
+        {
+          "user": "Hi",
+          "turns": 1,
+          "torch": "Hello! How can I help you today?",
+          "llama_cpp": "Hello! How can I help you today?",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "ur name?",
+          "turns": 1,
+          "torch": "I'm Hibari Koto. You can call me Hibari.",
+          "llama_cpp": "I'm Hibari Koto. You can call me Hibari.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "wat r u doing?",
+          "turns": 1,
+          "torch": "I'm not sure I could be of any information about my work.",
+          "llama_cpp": "I'm not sure I could be of any information about my work.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "My grandmother passed away last week.",
+          "turns": 1,
+          "torch": "That's so sad. I'm sorry to hear that.",
+          "llama_cpp": "That's so sad. I'm sorry to hear that.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "I'm so frustrated with my project.",
+          "turns": 1,
+          "torch": "Why are you so frustrated with your project?",
+          "llama_cpp": "Why do you like it so much?",
+          "llama_cpp_matches_torch": false
+        },
+        {
+          "user": "You're so pathetic!",
+          "turns": 1,
+          "torch": "I'm so sorry to hear that.",
+          "llama_cpp": "I'm so sorry to hear that.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "make this more professional: send me the documents",
+          "turns": 1,
+          "torch": "Here's a revised version of the sentence: \"The cards are made to the documents to the documents.\"\n\nI made a few changes to improve clarity and grammar. I changed \"has\" to \"has\" to make the sentence more concise and",
+          "llama_cpp": "Here's a revised version of the sentence: \"The cards are sending the documents to the documents.\"\n\nI made a few changes to improve clarity and grammar. I changed \"had a\" to \"had a\" to make the sentence more",
+          "llama_cpp_matches_torch": false
+        },
+        {
+          "user": "Task: Correct grammar\nInput: i has a interview tomorrow and im nervous",
+          "turns": 1,
+          "torch": "I have a interview tomorrow and im nervous.",
+          "llama_cpp": "I have a interview tomorrow and im nervous.",
+          "llama_cpp_matches_torch": true
+        },
+        {
+          "user": "Write an email to my manager asking for leave on Friday.",
+          "turns": 1,
+          "torch": "Here's a short email you can use:\nSubject: Following Up on Friday\n\nDear Manager,\n\nI wanted to follow up on Friday, but I need a little more time to finish it properly. Would it be possible to extend the dead",
+          "llama_cpp": "Here's a short email you can use:\nSubject: Following Up on Friday\n\nDear Manager,\n\nI wanted to follow up on Friday,\n\nThank you,\n[Your name]",
+          "llama_cpp_matches_torch": false
+        },
+        {
+          "user": "Not really. I'm nervous.",
+          "turns": 3,
+          "torch": "I hope you get it!",
+          "llama_cpp": "I hope you get the job!",
+          "llama_cpp_matches_torch": false
+        },
+        {
+          "user": "What is my name?",
+          "turns": 3,
+          "torch": "My name is Tanvir.",
+          "llama_cpp": "My name is Tanvir.",
+          "llama_cpp_matches_torch": true
+        }
+      ],
+      "tokenizer_parity": {
+        "cases": 23,
+        "mismatches": []
+      },
+      "summary": {
+        "llama_cpp_matches_torch": "7/11"
+      }
+    }
+  }
+}

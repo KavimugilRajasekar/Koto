@@ -1,0 +1,44 @@
+id: EXP-0007
+model: koto
+model_version: 1.3.1
+date: 2026-11-23
+objective: >-
+  Run the 1.3.0 experiment as it was designed: the 29.4M model on the conversation-first mix
+  (data/processed_1.3.0), which EXP-0006 did not use, with residual dropout against the
+  over-fitting EXP-0006 showed.
+problem: >-
+  EXP-0006 (1.3.0) trained on a different dataset than its config named (99,640 / 3,233 sequences,
+  train sha256 b53cf87c…, vs 93,509 / 3,748 conversations, sha256 2226d67d…) and failed acceptance
+  (behaviour 0.558 vs 0.660, reformulation 0.333 vs 0.67). Its eval loss was flat after 9k steps
+  while train loss kept falling (1.59 vs 2.87). Its result therefore says nothing about the 1.3.0 mix.
+source_changes:
+  - repo: hibari
+    files: [src/hibari/model/config.py (resid_dropout), src/hibari/model/transformer.py, src/hibari/model/llm.py,
+            src/hibari/release/validation.py (configs saved before a new field), scripts/engine/compare_backends.py (llama.cpp length)]
+  - repo: koto
+    files: [training/train.py (data_fingerprint, --data-cache-dir guard, conversation counts), koto/__init__.py (1.3.1),
+            koto/evaluation/behaviour_suite.py (no_human_claim false negative)]
+datasets: [configs/data/koto_1.3.0.yaml]
+configs: [configs/model/koto_1.3.1_large.yaml, configs/training/koto_1.3.1_large.yaml, configs/release/koto_1.3.1.yaml]
+checkpoint: null
+training:
+  status: NOT_STARTED        # the owner runs and authorises training
+  authorized_by: null
+  config: configs/training/koto_1.3.1_large.yaml
+  estimate: "~1.7 h on the owner's CUDA machine (EXP-0006 took 6,200 s for 12,000 steps); ~11-13 h on CPU"
+evaluation:
+  methodology:
+    - evaluation/evaluate_behaviour.py --suite behaviour and --suite conversation, seeds 0 1 2, release pipeline
+    - compare with koto_1.1.1_behaviour_r4 / koto_1.1.1_conversation and koto_1.3.0_* (same suites and seeds)
+    - note: no_human_claim is stricter from 2026-11-23; re-score 1.1.1 with the same suite version before comparing that column
+  reports: [outputs/evaluation/koto_1.3.0_behaviour.md, outputs/evaluation/koto_1.3.0_conversation.md]
+results: {}
+failures: []
+improvements: []
+limitations:
+  - two changes at once (correct data + resid_dropout); if 1.3.1 is accepted, a run with resid_dropout 0.0 would separate their effects
+  - the suite failures of 1.3.0 were read before preparing this run; no data or decoding was tuned on them (the data mix is unchanged)
+conclusion: >-
+  Prepared. Accept 1.3.1 only if the behaviour suite mean beats 1.1.1's 0.660 and reformulation stays >= 0.67
+  on seeds 0 1 2. If reformulation alone fails, the next step is a data change (rewriting share back towards
+  1.2.x's ~40%), decided by the owner.

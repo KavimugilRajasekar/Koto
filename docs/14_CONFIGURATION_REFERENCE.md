@@ -28,10 +28,13 @@ configs/
 | `d_ff` | 768 | SwiGLU hidden width |
 | `norm_eps` | 1e-5 | RMSNorm epsilon |
 | `dropout` | 0.0 | attention dropout |
+| `resid_dropout` | 0.0 (1.3.1: 0.1) | dropout on each sub-layer output before the residual add (engine 0.4.1); no parameters, GGUF unaffected |
 | `tie_embeddings` | true | output head shares the embedding matrix |
 | `rope_theta` | 10000.0 | RoPE base frequency |
 
 ## Training (`configs/training/*.yaml` → `hibari.training.trainer.TrainingArgs`)
+
+Koto-only keys (read by `training/train.py`): `experiment`, `model_version`, `model_config`, `init_checkpoint`, `val_examples`, `data_cache_dir` (a different `--data-cache-dir` is refused) and `data_fingerprint` (`{train_conversations, val_conversations, train_sha256}`; the run stops if the data differs — required from 1.3.1, because the 1.3.0 run used other data, EXP-0006).
 
 | Field | `koto.yaml` (full) | `koto_v5.yaml` (fine-tune) | Meaning |
 |---|---|---|---|

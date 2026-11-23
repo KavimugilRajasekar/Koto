@@ -30,7 +30,8 @@
 | **1.1.1** | `koto_1.1.0/best_model.pt` (unchanged) | 22.39 | current: same weights + reranking, normalisation, provenance-checked GGUFs (`releases/exported/1.1.1/`) |
 | 1.2.0 | `koto_1.2.0/best_model.pt` (step 14000) | — | trained 2026-11-22; identity "Koto, built on Hibari"; better writing / empathy, worse rewriting; **not released** (docs/32) |
 | 1.2.1 | `koto_1.2.1/` | — | data prepared (fewer repeats, more reply variety, rewriting up-weighted); not trained; superseded by 1.3.0 |
-| 1.3.0 | `koto_1.3.0_large/best_model.pt` (step 12000) | 17.72* | **29.4M parameters** (512 / 8 layers / 1536); trained 2026-11-23; training data unconfirmed (see CHANGELOG); not evaluated, **not released**. *own val set, not comparable |
+| 1.3.0 | `koto_1.3.0_large/best_model.pt` (step 12000) | 17.72* | **29.4M parameters** (512 / 8 layers / 1536); trained 2026-11-23; training data unconfirmed (see CHANGELOG); evaluated: **not accepted** (behaviour 0.558). *own val set, not comparable |
+| 1.3.1 | `koto_1.3.1_large/` | — | 1.3.0 retrain on the intended 1.3.0 mix, data fingerprint pinned, `resid_dropout 0.1`; not trained (EXP-0007) |
 
 > The GGUFs directly in `releases/exported/` contain the **1.0.0** weights (see `releases/exported/README.md`). Use `releases/exported/1.1.1/`.
 

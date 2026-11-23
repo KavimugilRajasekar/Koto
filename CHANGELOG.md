@@ -4,6 +4,27 @@ Versions follow `MAJOR.MINOR.PATCH`. Each new version is developed on its own
 branch (`release/<version>`). Experiment identifiers are recorded in every
 checkpoint's `run_metadata.experiment`.
 
+## [1.3.1] — PREPARED 2026-11-23, not trained (experiment EXP-0007; engine 0.4.1)
+
+Fixes for the problems found in 1.3.0:
+- **Wrong training data (root cause of EXP-0006's provenance problem):** `training/train.py` accepted any
+  data directory. It now refuses a `--data-cache-dir` that differs from the YAML's `data_cache_dir`,
+  checks `data_fingerprint` (conversation counts + train sha256) before loading anything else, and
+  records conversation counts next to sequence counts. `configs/training/koto_1.3.0_large.yaml` and the
+  new `koto_1.3.1_large.yaml` pin the 1.3.0 mix (93,509 / 3,748, sha256 `2226d67d…`).
+- **Over-fitting:** `configs/model/koto_1.3.1_large.yaml` = 1.3.0 architecture + `resid_dropout: 0.1`;
+  evaluation every 500 steps, early stopping after 6 evals without improvement.
+- **Stale metadata:** `koto.__version__` 1.1.1 → 1.3.1 (recorded as `run_metadata.koto_version`).
+- **Behaviour suite:** `no_human_claim` now catches "I am a (real) human / person" (it missed 1.3.0's
+  I2 reply). Re-scoring all stored reports: that is the only reply affected; no pass rate changes.
+- **GGUF parity:** 1.3.0 F32/F16 11/11 after the engine's `compare_backends` fix (`backend_parity_1.3.0_r2.json`).
+- Tests: `tests/test_runners.py` (behaviour-evaluation runner end to end with a tiny model, summary and
+  markdown; `train.py` fine-tune / missing-data / unknown-fingerprint-key branches). Koto line coverage 61.4% → 64.5%;
+  the rest is mostly the HuggingFace download / data-building scripts, which need the network.
+- Reproducibility on engine 0.4.1: the 1.1.1 and 1.2.0 behaviour suites (seeds 0 1 2) give the same
+  pass rates and 63/63 identical replies per seed as the stored r4 reports (`*_behaviour_engine041.md`).
+- Draft release profile `configs/release/koto_1.3.1.yaml`; GGUF metadata of 1.1.0 and 1.3.0 exports tracked.
+
 ## [1.3.0] — TRAINED 2026-11-23, evaluated: NOT ACCEPTED, not released (experiment EXP-0006; engine 0.4.0)
 
 **Training (owner):** `checkpoints/koto_1.3.0_large/best_model.pt` (sha256 `e7057576…`), 12,000 steps

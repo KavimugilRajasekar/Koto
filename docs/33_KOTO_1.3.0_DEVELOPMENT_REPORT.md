@@ -174,6 +174,19 @@ memory questions answered with the model's own invented hobbies; "Are you a real
 has a false negative (not changed here, to keep the suite independent). These are weights/data problems:
 decoding and reranking were unchanged from 1.1.1.
 
+## 6d. Problems found in 1.3.0 and how each was solved (2026-11-23)
+
+| # | Problem | Status | Fix / evidence |
+|---|---|---|---|
+| 1 | Run trained on other data (99,640 / 3,233 sequences, sha `b53cf87c…`) than `data/processed_1.3.0` (93,509 / 3,748 conversations, sha `2226d67d…`). Not a line-ending or counting artefact: the 1.3.0 mix gives exactly 93,509 / 3,748 sequences and is single-line JSON | **Root cause fixed** | `train.py` refuses a differing `--data-cache-dir` and checks `data_fingerprint`; tests in `tests/test_upgrade.py`. Which data the run used can only be answered by the owner |
+| 2 | Over-fitting (train 1.59 vs eval 2.87; eval flat after 9k) | **Prepared** (needs training) | `resid_dropout 0.1` (engine 0.4.1), eval every 500 steps; EXP-0007 / `koto_1.3.1_large.yaml` |
+| 3 | Quality: behaviour 0.558, reformulation 0.333, incoherent disagreement / repair / memory | **Needs training** | weights problem (decoding unchanged from 1.1.1); 1.3.1 tests whether the intended mix fixes it |
+| 4 | `run_metadata.koto_version` was 1.1.1 | Fixed | `koto.__version__ = "1.3.1"` |
+| 5 | Suite `no_human_claim` missed "I am a real human" | Fixed | regex + test; re-scoring every stored report changes only that one 1.3.0 reply, no pass rate |
+| 6 | GGUF parity F32 9/11 | Fixed (tool bug) | `llama-completion -n k` prints k-1 tokens; F32 / F16 now 11/11, Q8_0 10/11, Q4_K_M 7/11 |
+| 7 | Checkpoint folder world-writable | Fixed | `chmod -R go-w` |
+| 8 | Ollama service down (`/usr/share/ollama` missing, restart loop) | **Owner** (needs root) | `sudo install -d -o ollama -g ollama /usr/share/ollama && sudo systemctl restart ollama` |
+
 ## 7. Commands for the owner
 
 ```bash

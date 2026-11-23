@@ -6,7 +6,10 @@ Training YAML keys beyond ``hibari.training.trainer.TrainingArgs``:
 * ``init_checkpoint`` — start from these weights (fine-tune / continue). If the
   file does not exist the run stops with an error; it never falls back to
   random weights. ``--checkpoint`` on the command line overrides it.
-* ``data_cache_dir``  — processed data directory (``--data-cache-dir`` overrides)
+* ``data_cache_dir``  — processed data directory. ``--data-cache-dir`` may only be used when the
+  YAML has no ``data_cache_dir`` (a different directory is refused).
+* ``data_fingerprint`` — ``{train_conversations, val_conversations, train_sha256}`` of the data the
+  config was written for; the run stops if the processed data differs. Required for new versions.
 * ``val_examples``    — cap on validation examples
 * ``model_version``   — version of the weights this run produces (default:
   ``koto.__version__``); recorded as ``run_metadata.model_version`` and checked
@@ -55,6 +58,24 @@ def _git_commit(path: Path) -> str:
         return "unknown"
 
 
+def check_data_fingerprint(expected: dict, actual: dict) -> None:
+    """Refuse to train when the processed data is not the data the training YAML was written for.
+
+    ``expected`` is the YAML's ``data_fingerprint`` (any of ``train_conversations``,
+    ``val_conversations``, ``train_sha256``); ``actual`` has the same keys, measured.
+    Koto 1.3.0 was trained on a different dataset than its config named (EXP-0006);
+    this check makes that impossible to do silently.
+    """
+    unknown = set(expected) - set(actual)
+    if unknown:
+        raise SystemExit(f"data_fingerprint has unknown keys {sorted(unknown)}; allowed: {sorted(actual)}")
+    bad = [f"{k}: expected {expected[k]!r}, found {actual[k]!r}" for k in expected if str(expected[k]) != str(actual[k])]
+    if bad:
+        raise SystemExit("processed data does not match data_fingerprint in the training config:\n  " + "\n  ".join(bad)
+                         + "\nBuild or copy the right data (scripts/build_mix.py --config configs/data/<version>.yaml), "
+                         "do not edit the fingerprint to make it pass.")
+
+
 def train(
     model_config_path: str | None = None,
     training_config_path: str = str(CONFIG_DIR / "training" / "koto.yaml"),
@@ -92,6 +113,11 @@ def train(
     model_version = str(t_cfg.pop("model_version", koto.__version__))
     yaml_init = t_cfg.pop("init_checkpoint", None)
     yaml_data = t_cfg.pop("data_cache_dir", None)
+    # Like model_config: a --data-cache-dir that differs from the YAML is an error, so a run cannot
+    # train a version on data its config does not name (Koto 1.3.0, EXP-0006).
+    if yaml_data and data_cache_dir and resolve(data_cache_dir).resolve() != resolve(yaml_data).resolve():
+        raise SystemExit(f"--data-cache-dir {data_cache_dir} differs from data_cache_dir {yaml_data} in {training_config_path}")
+    data_fingerprint = t_cfg.pop("data_fingerprint", None)
     checkpoint_path = checkpoint_path or yaml_init
     data_cache_dir = str(resolve(data_cache_dir or yaml_data or DATA_DIR / "processed"))
     tokenizer_dir = str(resolve(tokenizer_dir))
@@ -117,6 +143,20 @@ def train(
             "Build the data first (scripts/build_mix.py or scripts/prepare_data.py)."
         )
 
+    # Load and fingerprint the data before anything expensive happens.
+    print(f"Loading cached conversations from {data_cache_dir}...")
+    train_bytes = train_cache_path.read_bytes()
+    train_convs = json.loads(train_bytes.decode("utf-8"))
+    with open(val_cache_path, "r", encoding="utf-8") as f:
+        val_convs = json.load(f)
+    measured = {"train_conversations": len(train_convs), "val_conversations": len(val_convs),
+                "train_sha256": hashlib.sha256(train_bytes).hexdigest()}
+    if data_fingerprint:
+        check_data_fingerprint(data_fingerprint, measured)
+        print(f"Data fingerprint OK: {measured['train_conversations']} train / {measured['val_conversations']} val conversations")
+    else:
+        print("WARNING: no data_fingerprint in the training config; the data is not checked against it.")
+
     # 3. Load Tokenizer
     print(f"Loading tokenizer from {tokenizer_dir}...")
     tokenizer = HibariTokenizer.load(tokenizer_dir)
@@ -136,13 +176,7 @@ def train(
     print(f"Total Parameters:     {param_counts['total']:,}")
     print(f"Trainable Parameters: {param_counts['trainable']:,}")
 
-    # 5. Load Cached Conversations
-    print(f"Loading cached conversations from {data_cache_dir}...")
-    with open(train_cache_path, "r", encoding="utf-8") as f:
-        train_convs = json.load(f)
-    with open(val_cache_path, "r", encoding="utf-8") as f:
-        val_convs = json.load(f)
-
+    # 5. Conversations were loaded and fingerprinted above
     print(f"Building PyTorch datasets with SFT loss masking (train: {len(train_convs)}, val: {len(val_convs)})...")
     train_dataset = ConversationDataset(
         conversations=train_convs,
@@ -200,15 +234,18 @@ def train(
         "training_config": training_config_path,
         "training_config_values": {**t_cfg, "val_examples": val_limit},
         "data_cache_dir": data_cache_dir,
-        "train_examples": len(train_dataset),
+        "train_examples": len(train_dataset),          # sequences after tokenisation
         "val_examples": len(val_dataset),
+        "train_conversations": measured["train_conversations"],
+        "val_conversations": measured["val_conversations"],
+        "data_fingerprint_checked": bool(data_fingerprint),
         "train_supervised_tokens": int(sum((ex["targets"] != -100).sum().item() for ex in train_dataset.examples)),
         "parameters": param_counts["total"],
         "init_checkpoint": checkpoint_path,
         "git_commit": _git_commit(KOTO_ROOT),
         "engine_git_commit": _git_commit(KOTO_ROOT.parents[1]),
         "data_stats_sha256": hashlib.sha256(stats_file.read_bytes()).hexdigest() if stats_file.exists() else None,
-        "train_file_sha256": hashlib.sha256(train_cache_path.read_bytes()).hexdigest(),
+        "train_file_sha256": measured["train_sha256"],
         "torch": str(torch.__version__),
     }
     # recorded paths are repo-relative: the metadata goes into committed files
@@ -307,7 +344,7 @@ def main():
         "--data-cache-dir",
         type=str,
         default=None,
-        help="Processed data directory (default: data_cache_dir from the training YAML, else data/processed)",
+        help="Processed data directory, only for configs without data_cache_dir (a different directory is refused)",
     )
     parser.add_argument(
         "--max-steps",
