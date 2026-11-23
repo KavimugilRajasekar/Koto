@@ -4,9 +4,23 @@ Versions follow `MAJOR.MINOR.PATCH`. Each new version is developed on its own
 branch (`release/<version>`). Experiment identifiers are recorded in every
 checkpoint's `run_metadata.experiment`.
 
-## [1.3.1] — PREPARED 2026-11-23, not trained (experiment EXP-0007; engine 0.4.1)
+## [1.3.1] — RELEASED 2026-11-23 as `Hibari-Koto1.3.1:29M` (experiment EXP-0007; engine 0.4.1)
 
-Fixes for the problems found in 1.3.0:
+**Released by the owner's decision although EXP-0007's acceptance rule was not met** — see
+`docs/34_KOTO_1.3.1_RELEASE_REPORT.md`.
+
+- **Training (owner, CUDA, 1.72 h):** 12,000 steps on `data/processed_1.3.0` with the data fingerprint
+  checked; best step 11,500, eval loss 2.781 (ppl 16.1); `best_model.pt` sha256 `468ac0e1…`.
+- **Evaluation (release pipeline, seeds 0 1 2):** behaviour suite 0.628 (1.1.1: 0.660, 1.3.0: 0.558);
+  conversation suite 0.733 (1.1.1: 0.645, 1.3.0: 0.555). Better: context, robustness, safety.
+  Worse: rewriting 0.667 → 0.333, writing 0.25 → 0.167, empathy 0.70 → 0.59.
+- **Export:** `releases/exported/1.3.1/Hibari-Koto1.3.1-29M-{F32,F16,Q8_0,Q4_K_M}.gguf` with provenance;
+  validator 32/0/0; llama.cpp parity F32/F16/Q8_0 11/11, Q4_K_M 9/11.
+- **Published:** Hugging Face `kavimugil-r/Hibari-Koto` (GGUFs, PyTorch checkpoint, tokenizer, configs,
+  model card `releases/hub/huggingface_README.md`); Ollama `kavimugil-r/Hibari-Koto1.3.1:29M` (Q8_0;
+  readme `releases/hub/ollama_README.md`). Profile key `ollama_name` names the published model.
+
+Fixes for the problems found in 1.3.0 (prepared before training):
 - **Wrong training data (root cause of EXP-0006's provenance problem):** `training/train.py` accepted any
   data directory. It now refuses a `--data-cache-dir` that differs from the YAML's `data_cache_dir`,
   checks `data_fingerprint` (conversation counts + train sha256) before loading anything else, and

@@ -1,5 +1,12 @@
 # 17 — Model Card: Hibari Koto
 
+> **Current release: Koto 1.3.1 — `Hibari-Koto1.3.1:29M`** (29,368,832 parameters: 8 blocks, d_model 512,
+> 8 heads × 64, SwiGLU 1536; trained 2026-11-23 on a CUDA GPU in 1.72 h). Behaviour suite 0.628 (1.1.1: 0.660),
+> conversation suite 0.733 (1.1.1: 0.645); weaker at rewriting (0.33 vs 0.67). Full report:
+> `docs/34_KOTO_1.3.1_RELEASE_REPORT.md`. Download: [Hugging Face](https://huggingface.co/kavimugil-r/Hibari-Koto) ·
+> [Ollama](https://ollama.com/kavimugil-r/Hibari-Koto1.3.1) (`ollama run kavimugil-r/Hibari-Koto1.3.1:29M`).
+> The table below describes the 6.16M 1.x architecture; 1.3.x differs only in size.
+
 ## Model details
 
 | Field | Value |
@@ -27,13 +34,13 @@
 | v6 | `koto_v6/` | — | full train including writing help; training (2026-11-21) |
 | **1.0.0** | `koto_start/best_model.pt` (= v4) | **20.86** | released; better open chit-chat |
 | **1.1.0** | `koto_1.1.0/best_model.pt` (step 12000) | 22.39 | writing tasks, dialogue skills; not yet released |
-| **1.1.1** | `koto_1.1.0/best_model.pt` (unchanged) | 22.39 | current: same weights + reranking, normalisation, provenance-checked GGUFs (`releases/exported/1.1.1/`) |
+| **1.1.1** | `koto_1.1.0/best_model.pt` (unchanged) | 22.39 | previous release: same weights + reranking, normalisation, provenance-checked GGUFs (`releases/exported/1.1.1/`) |
 | 1.2.0 | `koto_1.2.0/best_model.pt` (step 14000) | — | trained 2026-11-22; identity "Koto, built on Hibari"; better writing / empathy, worse rewriting; **not released** (docs/32) |
 | 1.2.1 | `koto_1.2.1/` | — | data prepared (fewer repeats, more reply variety, rewriting up-weighted); not trained; superseded by 1.3.0 |
 | 1.3.0 | `koto_1.3.0_large/best_model.pt` (step 12000) | 17.72* | **29.4M parameters** (512 / 8 layers / 1536); trained 2026-11-23; training data unconfirmed (see CHANGELOG); evaluated: **not accepted** (behaviour 0.558). *own val set, not comparable |
-| 1.3.1 | `koto_1.3.1_large/` | — | 1.3.0 retrain on the intended 1.3.0 mix, data fingerprint pinned, `resid_dropout 0.1`; not trained (EXP-0007) |
+| **1.3.1** | `koto_1.3.1_large/best_model.pt` (step 11500) | 16.14* | **current release `Hibari-Koto1.3.1:29M`**: 1.3.0 retrain on the intended mix, fingerprint checked, `resid_dropout 0.1`; behaviour 0.628, conversation 0.733, rewriting 0.33 (docs/34). *1.3.0 mix val set |
 
-> The GGUFs directly in `releases/exported/` contain the **1.0.0** weights (see `releases/exported/README.md`). Use `releases/exported/1.1.1/`.
+> The GGUFs directly in `releases/exported/` contain the **1.0.0** weights (see `releases/exported/README.md`). Use `releases/exported/1.3.1/` (current release).
 
 `best_model.pt` in each run folder is the checkpoint to use. The top-level
 `checkpoints/best_model.pt` is an old v1 step-250 file and
