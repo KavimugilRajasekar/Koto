@@ -13,7 +13,7 @@
 | **Vocabulary** | 4,096 byte-level BPE tokens |
 | **Weight tying** | input embedding = output head |
 | **Training** | from scratch in PyTorch on CPU; loss on assistant tokens only |
-| **Author** | Kavimugil Rajasekar |
+| **Author** | Kavimugil Rajasekar — [Hugging Face](https://huggingface.co/kavimugil-r) · [Ollama](https://ollama.com/kavimugil-r) · [GitHub](https://github.com/KavimugilRajasekar) |
 | **Licence (code and weights)** | MIT; check the training-data licences in `16_DATASET_CATALOG.md` before redistributing |
 
 ## Versions

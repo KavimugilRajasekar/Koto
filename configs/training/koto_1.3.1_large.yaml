@@ -4,8 +4,9 @@
 #   (resume after an interruption: the same command with --resume)
 # Do NOT pass --data-cache-dir: a directory different from data_cache_dir below is refused, and the
 # run stops unless the data matches data_fingerprint exactly (the 1.3.0 run used other data, EXP-0006).
-# data/ is not in git: on another machine copy data/processed_1.3.0 from this one; rebuilding it there
-# uses that machine's data/processed and will not match the fingerprint.
+# data/ is not in git: on another machine download it (byte-identical, the fingerprint matches):
+#   hf download kavimugil-r/koto-data --repo-type dataset --include "processed_1.3.0/*" --local-dir data
+# (private dataset, owner login needed) or copy it. Rebuilding it there will not match the fingerprint.
 # Changes vs koto_1.3.0_large.yaml: resid_dropout 0.1 (model config), eval every 500 steps, fingerprint.
 experiment: koto-1.3.1
 model_version: 1.3.1
