@@ -4,14 +4,15 @@ Versions follow `MAJOR.MINOR.PATCH`. Each new version is developed on its own
 branch (`release/<version>`). Experiment identifiers are recorded in every
 checkpoint's `run_metadata.experiment`.
 
-## [1.3.0] — TRAINED 2026-11-23, not evaluated, not released (experiment EXP-0006; engine 0.4.0)
+## [1.3.0] — TRAINED 2026-11-23, evaluated: NOT ACCEPTED, not released (experiment EXP-0006; engine 0.4.0)
 
 **Training (owner):** `checkpoints/koto_1.3.0_large/best_model.pt` (sha256 `e7057576…`), 12,000 steps
 (stop: max_steps), ~1.7 h on CUDA; best eval loss 2.875 / perplexity 17.72 at step 12,000 (on the run's
 own val set). Eval loss flat after step 9k while train loss fell to 1.59: possible over-fitting.
 **Open issue:** the checkpoint records `data\processed` with 99,640 / 3,233 examples, not the prepared
-`data/processed_1.3.0` (93,509 / 3,748); the owner must confirm the data. Behaviour / conversation
-suites not run yet.
+`data/processed_1.3.0` (93,509 / 3,748); the owner must confirm the data. **Evaluated, not accepted:** behaviour suite mean 0.558
+(1.1.1: 0.660), reformulation 0.333 (bar 0.67), conversation suite 0.555 (1.1.1: 0.644);
+safety 1.0 and writing 0.5 improved. Reports `outputs/evaluation/koto_1.3.0_{behaviour,conversation}.md`.
 
 
 **Larger model** (owner's decision): `configs/model/koto_1.3.0_large.yaml`, d_model 512, 8 layers,
