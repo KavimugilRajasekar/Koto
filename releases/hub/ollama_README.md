@@ -1,3 +1,5 @@
+![Hibari](https://kavimugilrajasekar.github.io/assets/images/hibari/hibari-logo.jpeg)
+
 # Hibari-Koto1.3.1:29M
 
 **Koto 1.3.1** — a 29.4M-parameter conversational model trained from scratch on **Hibari**, an LLM
@@ -19,6 +21,21 @@ ollama run kavimugil-r/Hibari-Koto1.3.1:29M
 | Vocabulary | 4,096 byte-level BPE tokens |
 | Weights in this tag | Q8_0 GGUF (29.9 MiB), identical greedy output to the PyTorch model on 11/11 test prompts |
 | Training | 93,509 conversations, 12,000 steps on one GPU (1.72 h), best validation loss 2.781 |
+
+## Architecture
+
+![Hibari Koto overall architecture](https://kavimugilrajasekar.github.io/assets/images/hibari/hibari-koto-overall-architecture.jpeg)
+
+Chat turns → byte-level BPE tokenizer → embedding → 8 pre-norm Transformer blocks → RMSNorm → tied LM head → sampling.
+
+![Transformer block](https://kavimugilrajasekar.github.io/assets/images/hibari/hibari-koto-transformer-block.jpeg)
+
+![Multi-head causal attention with RoPE and KV cache](https://kavimugilrajasekar.github.io/assets/images/hibari/hibari-koto-attention.jpeg)
+
+![Token embedding and tied output projection](https://kavimugilrajasekar.github.io/assets/images/hibari/hibari-koto-embedding-and-output.jpeg)
+
+The diagrams show the 29.4M architecture shared by Koto 1.3.0 and 1.3.1; 1.3.1 adds residual dropout 0.1 in training.
+Full walkthrough: https://kavimugilrajasekar.github.io/hibari/architecture.html
 
 ## Results (Python release pipeline, seeds 0 1 2)
 

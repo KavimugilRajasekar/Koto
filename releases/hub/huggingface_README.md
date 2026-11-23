@@ -20,6 +20,8 @@ model-index:
 
 <div align="center">
 
+<img src="https://kavimugilrajasekar.github.io/assets/images/hibari/hibari-logo.jpeg" alt="Hibari logo" width="420"/>
+
 # Hibari-Koto1.3.1:29M
 
 **Koto 1.3.1 — a 29.4M-parameter conversational model trained from scratch on the Hibari engine**
@@ -91,6 +93,26 @@ The Python engine adds what a GGUF cannot carry: a deterministic safety layer (s
 harmful requests get a reviewed response), a router for rewriting tasks, informal-text
 normalisation and reranking of several model-written candidates. **Ollama and llama.cpp return the
 raw model's reply without these layers.**
+
+## Architecture
+
+<p align="center"><img src="https://kavimugilrajasekar.github.io/assets/images/hibari/hibari-koto-overall-architecture.jpeg" alt="Hibari Koto overall architecture" width="900"/></p>
+
+*End to end: chat turns → byte-level BPE tokenizer → token embedding → 8 pre-norm Transformer blocks → final RMSNorm →
+tied LM head → sampling, repeated token by token with a KV cache.*
+
+| Transformer block | Multi-head causal attention |
+|---|---|
+| <img src="https://kavimugilrajasekar.github.io/assets/images/hibari/hibari-koto-transformer-block.jpeg" alt="Transformer block" width="440"/> | <img src="https://kavimugilrajasekar.github.io/assets/images/hibari/hibari-koto-attention.jpeg" alt="Multi-head causal attention with RoPE and KV cache" width="440"/> |
+| `h = x + Attn(RMSNorm(x))`, `y = h + SwiGLU(RMSNorm(h))` | bias-free Q/K/V, RoPE on Q and K, KV cache, causal mask |
+
+<p align="center"><img src="https://kavimugilrajasekar.github.io/assets/images/hibari/hibari-koto-embedding-and-output.jpeg" alt="Token embedding and tied output projection" width="760"/></p>
+
+*Token embedding and tied output projection (`logits = h · Eᵀ`): the 4,096 × 512 embedding matrix is used for input and output.*
+
+The diagrams were drawn for the 29.4M architecture shared by Koto 1.3.0 and 1.3.1 (their titles say 1.3.0);
+1.3.1 adds residual dropout 0.1 during training — the "Dropout 0.0" in the diagram is the attention dropout, unchanged.
+More: [project page — architecture](https://kavimugilrajasekar.github.io/hibari/architecture.html).
 
 ## Model details
 
