@@ -24,8 +24,8 @@ model-index:
 
 **Koto 1.3.1 — a 29.4M-parameter conversational model trained from scratch on the Hibari engine**
 
-[Hibari engine (GitHub)](https://github.com/KavimugilRajasekar/Hibari/tree/feature/koto-1.3.0) ·
-[Koto model repo (GitHub)](https://github.com/KavimugilRajasekar/Koto/tree/release/1.3.0) ·
+[Hibari engine (GitHub)](https://github.com/KavimugilRajasekar/Hibari/tree/feature/koto-1.3.1) ·
+[Koto model repo (GitHub)](https://github.com/KavimugilRajasekar/Koto/tree/release/1.3.1) ·
 [Ollama](https://ollama.com/kavimugil-r/Hibari-Koto1.3.1) ·
 [Project page](https://kavimugilrajasekar.github.io/hibari/index.html)
 
@@ -81,7 +81,7 @@ The chat template is embedded in the GGUF (`<|system|>`, `<|user|>`, `<|assistan
 
 **Python (Hibari engine, full application layer)**
 ```bash
-git clone --recurse-submodules -b feature/koto-1.3.0 https://github.com/KavimugilRajasekar/Hibari.git
+git clone --recurse-submodules -b feature/koto-1.3.1 https://github.com/KavimugilRajasekar/Hibari.git
 cd Hibari && python -m venv .venv && source .venv/bin/activate && pip install -e .
 hf download kavimugil-r/Hibari-Koto --include "pytorch/best_model.pt" --local-dir hf
 mkdir -p models/Koto/checkpoints/koto_1.3.1_large && mv hf/pytorch/best_model.pt models/Koto/checkpoints/koto_1.3.1_large/
@@ -120,7 +120,7 @@ raw model's reply without these layers.**
 Sources: Empathetic Dialogues, smol-smoltalk / smol-rewrite, Blended Skill Talk, Everyday
 Conversations, OASST1, CoEdIT (Apache-2.0); ProsocialDialog (CC BY 4.0); DailyDialog (original
 release CC BY-NC-SA 4.0); ParaDetox (OpenRAIL++); and hand-written Koto data (MIT). Details:
-[dataset catalog](https://github.com/KavimugilRajasekar/Koto/blob/release/1.3.0/docs/16_DATASET_CATALOG.md).
+[dataset catalog](https://github.com/KavimugilRajasekar/Koto/blob/release/1.3.1/docs/16_DATASET_CATALOG.md).
 The weights are released under MIT; because part of the training data is non-commercial
 (DailyDialog) and part is OpenRAIL++ (ParaDetox), check those terms before commercial use.
 
