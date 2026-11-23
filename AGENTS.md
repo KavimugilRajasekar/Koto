@@ -17,7 +17,7 @@ the engine repository: [`../../agents/`](../../agents/README.md)
 - Current release: **1.1.1** (`configs/release/koto_1.1.1.yaml`, weights `checkpoints/koto_1.1.0`).
 - **1.2.0** trained but NOT released (rewriting regression; `docs/32`, `experiments/EXP-0004.yaml`).
 - **1.2.1** — data built, never trained; superseded by 1.3.0 (`experiments/EXP-0005.yaml`).
-- Next: **1.3.0** — the large model (29.4M parameters, `configs/model/koto_1.3.0_large.yaml`), conversation-first data in `data/processed_1.3.0`, training NOT STARTED (`experiments/EXP-0006.yaml`). 6.16M configs are baselines only.
+- Next: **1.3.0** — the large model (29.4M parameters, `configs/model/koto_1.3.0_large.yaml`), conversation-first data in `data/processed_1.3.0`; **trained 2026-11-23** (`checkpoints/koto_1.3.0_large/`, `experiments/EXP-0006.yaml`), not evaluated; the run's recorded data (99,640 examples, `data\processed`) does not match the prepared mix — owner to confirm. 6.16M configs are baselines only.
 - Work branch: `release/1.3.0` (local); tags `v1.1.0`, `v1.1.1`.
 - Suites: `--suite behaviour` (independent, 52 cases) and `--suite conversation` (the 1.3.0 brief's prompts).
 - `releases/exported/*.gguf` (top level) are **1.0.0** weights; use `releases/exported/1.1.1/`.

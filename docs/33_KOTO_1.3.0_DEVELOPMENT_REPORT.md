@@ -133,6 +133,27 @@ New regression tests that fail on the old code: `test_packaging.py::test_all_imp
 - A real-data smoke run of the 1.3.0 training entry point was blocked by the session's permission
   system; the code paths are covered by synthetic tests (§5). Command for the owner below.
 
+## 6b. Training run (owner, 2026-11-23)
+
+Measured from `checkpoints/koto_1.3.0_large/training_history.json`:
+
+| step | 1k | 3k | 5k | 7k | 9k | 10k | 11k | 12k |
+|---|---|---|---|---|---|---|---|---|
+| eval loss | 4.171 | 3.391 | 3.138 | 3.017 | 2.893 | 2.900 | 2.887 | **2.875** |
+| train loss | 3.88 | 2.62 | 2.38 | 1.99 | 1.93 | 1.64 | 1.61 | 1.59 |
+
+- 29,368,832 parameters, 12,000 steps (stop: max_steps), ~1.7 h on CUDA (torch 2.12.1+cu126).
+  Best = final step; `best_model.pt` sha256 `e705757623a5234af381823b69bbcb866476a24391b757f3fabc895cd122e5be`.
+- Eval loss is nearly flat after 9k while train loss keeps falling (gap ~1.3 nats after ~3.9 epochs):
+  over-fitting is starting.
+- **Data provenance unconfirmed.** The checkpoint records `data_cache_dir: data\processed`,
+  99,640 train / 3,233 val examples and train sha256 `b53cf87c…`. The prepared mix
+  `data/processed_1.3.0` has 93,509 / 3,748 and sha256 `2226d67d…`; no local data directory
+  matches. Perplexity 17.72 is on that run's val set and not comparable with earlier versions.
+- Three single-seed samples (not an evaluation): greeting → "hi, good. what is your favorite?";
+  disagreement → "What do you think?"; polite rewrite → "Could you please give me the report now?".
+- Not run yet: behaviour and conversation suites (seeds 0 1 2), `evaluate_upgrade.py`, GGUF export.
+
 ## 7. Commands for the owner
 
 ```bash

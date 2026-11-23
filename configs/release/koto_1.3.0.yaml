@@ -1,13 +1,14 @@
-# Koto 1.3.0 — DRAFT release profile. training_status NOT_STARTED: the checkpoint
-# does not exist yet, so validation fails until the owner's run is done. After training:
-#   1. set checkpoint_sha256 (sha256sum checkpoints/koto_1.3.0/best_model.pt) and training_status: COMPLETED
+# Koto 1.3.0 — DRAFT release profile (NOT RELEASED). Trained by the owner 2026-11-23 (EXP-0006);
+# data provenance UNCONFIRMED: the checkpoint records data_cache_dir data\processed with 99,640 train / 3,233 val examples (train sha256 b53cf87c…), not data/processed_1.3.0 (93,509 / 3,748, sha256 2226d67d…).
+# Remaining steps:
+#   1. done: checkpoint_sha256 and training_status: COMPLETED
 #   2. python ../../scripts/engine/validate_release.py --profile configs/release/koto_1.3.0.yaml --no-gguf
 #   3. python evaluation/evaluate_behaviour.py --profile configs/release/koto_1.3.0.yaml --name koto_1.3.0_behaviour --seeds 0 1 2
 #   4. python ../../scripts/engine/export.py --profile configs/release/koto_1.3.0.yaml --llama-quantize <bin> --record
 model: koto
 version: 1.3.0
 weights_version: 1.3.0
-training_status: NOT_STARTED
+training_status: COMPLETED
 experiment: EXP-0006
 
 identity:
@@ -25,7 +26,7 @@ training_system_prompt: >-
 model_config: configs/model/koto_1.3.0_large.yaml
 inference_config: configs/inference/koto.yaml
 checkpoint: checkpoints/koto_1.3.0_large/best_model.pt
-checkpoint_sha256: null
+checkpoint_sha256: e705757623a5234af381823b69bbcb866476a24391b757f3fabc895cd122e5be
 tokenizer_dir: tokenizer
 tokenizer_sha256: d5a2924e80b2afbb371f1309a2fd825b0a2aa3e8638d4735f0f5c789581e8587
 
